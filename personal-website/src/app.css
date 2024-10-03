@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+span{
+  font-family: monospace;
+}
+
+li{
+  font-family: monospace;
+}
+
+body{
+  background-color: #374151;
+}
