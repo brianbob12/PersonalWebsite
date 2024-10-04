@@ -3,7 +3,7 @@
   import DockerLogo from "$lib/Logos/DockerLogo.svelte";
 </script>
 
-<HexTile backgroundColor="#f9fafb">
+<HexTile backgroundColor="#d6d3d1">
   <div
     slot="content"
     class="flex flex-col justify-start items-center space-y-2"

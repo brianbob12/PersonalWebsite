@@ -3,7 +3,7 @@
   import HexTile from "$lib/HexTile.svelte";
 </script>
 
-<HexTile backgroundColor="#f9fafb">
+<HexTile backgroundColor="#d6d3d1">
   <div slot="content" class="flex flex-col items-center space-y-2">
     <div class="flex flex-row justify-center pt-12 w-[200%]">
       <span class="font-bold text-2xl">Projects I'm proud of</span>

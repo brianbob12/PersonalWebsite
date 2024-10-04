@@ -60,6 +60,8 @@
     overflow-x: hidden;
     height: 100vh;
     align-items: center;
+    height: 100vh;
+    overflow-y: hidden;
   }
   .first-row {
     margin-top: -220px;

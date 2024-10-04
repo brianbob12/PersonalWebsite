@@ -7,7 +7,7 @@
   import TypescriptIcon from "$lib/Logos/TypescriptIcon.svelte";
 </script>
 
-<HexTile flipable backgroundColor="#f9fafb">
+<HexTile flipable backgroundColor="#e2e8f0">
   <div
     slot="content"
     class="flex flex-col justify-start items-center space-y-2"
