@@ -1,7 +1,7 @@
 <script lang="ts">
   export let flipable = false;
 
-  export let backgroundColor = "#f9fafb";
+  export let backgroundColor = "#374151"; //"#f9fafb";
 
   $: borderColor = flipable ? "#6366f1" : "#14b8a6";
 
