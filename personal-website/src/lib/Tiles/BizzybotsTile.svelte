@@ -18,7 +18,7 @@
     <div class="flex flex-row justify-center items-center w-[160%]">
       <p>
         The Bizzybots platform is a tool to help researchers and educators
-        create custom, controllable, and reliable chatbot based on LLMs.
+        create custom, controllable, and reliable chatbots based on LLMs.
       </p>
     </div>
     <div class="flex flex-row justify-center items-center w-[120%]">
@@ -60,7 +60,7 @@
         </p>
       </div>
       <div class="w-[160%] flex flex-col justify-center items-center">
-        <span> Sounds Interesting? </span>
+        <span> Want to learn more? </span>
         <div class="h-2" />
         <span> Send me an email! </span>
         <FancyLink href="mailto:japaneserhino@gmail.com" position="center">

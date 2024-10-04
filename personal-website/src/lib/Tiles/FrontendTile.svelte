@@ -16,7 +16,7 @@
       <span class="font-bold text-2xl">Frontend Development</span>
     </div>
     <span class="font-bold text-xl">Languages: </span>
-    <div class="flex flex-row justify-center items-center w-[150%]">
+    <div class="flex flex-row justify-center items-center w-[160%]">
       <SvelteLogo height={40} width={80} /><span>,</span>
       <div class="w-2" />
       <div class="w-6 h-6">
@@ -24,17 +24,21 @@
       </div>
       <span>,</span>
       <div class="w-2" />
-      <p>HTML, CSS, JavaScript, Pug, Markdown,</p>
+      <p>HTML, CSS, JavaScript, Pug, Markdown</p>
     </div>
     <span class="font-bold text-xl">Frameworks: </span>
-    <div class="flex flex-row justify-center items-center w-[180%] space-x-2">
-      <ReactLogo height={40} width={40} /> <span>React, </span>
-      <NextJsLogo height={40} width={80} /> <span>, </span>
-      <p>SvelteKit(this site!)</p>
+    <div class="flex flex-col justify-center items-center w-[180%]">
+      <div class="flex flex-row justify-center items-center space-x-2">
+        <ReactLogo height={40} width={40} /> <span>React, </span>
+        <NextJsLogo height={40} width={80} /> <span>, </span>
+        <p>SvelteKit(this site!),</p>
+      </div>
+      <p>Android Native, React Native</p>
     </div>
     <span class="font-bold text-xl">Tools: </span>
-    <div class="flex flex-row justify-center items-center w-[150%]">
-      <p>Selenium, Tailwind, ReactQuery, tRPC, esbuild</p>
+    <div class="flex flex-col justify-center items-center w-[150%]">
+      <p>Selenium, Tailwind, ReactQuery, tRPC, esbuild,</p>
+      <p>Vite, Shadcn</p>
     </div>
     <div class="absolute bottom-0">
       <span class="text-gray-500">Hover on hexagon for projects</span>

@@ -4,15 +4,15 @@
 </script>
 
 <HexTile backgroundColor="#d6d3d1">
-  <div slot="content" class="flex flex-col items-center space-y-2">
-    <div class="flex flex-row justify-center pt-12 w-[200%]">
+  <div slot="content" class="flex flex-col items-center space-y-4">
+    <div class="flex flex-row justify-center pt-4 w-[200%]">
       <span class="font-bold text-2xl">Projects I'm proud of</span>
     </div>
     <div class="flex flex-row justify-center items-center w-[120%] space-x-2">
       <span>Running the Philadelphia Marathon 2024</span>
     </div>
     <div class="flex flex-row justify-center items-center w-[140%] space-x-2">
-      <span>Boid Flocking Simulation to sort a list</span>
+      <span>Bird flock simulation to sort a list</span>
       <FancyLink href="https://github.com/brianbob12/BoidSort" position="right"
         >GitHub</FancyLink
       >
@@ -21,19 +21,20 @@
       >
     </div>
     <div class="flex flex-row justify-center items-center w-[160%] space-x-2">
-      <span
-        >Gradient based simulation of internal forces of 2D brittle objects</span
-      >
+      <span> Gradient based simulation of 2D brittle lattices </span>
       <FancyLink href="https://github.com/brianbob12/Shatter2" position="right">
         GitHub
       </FancyLink>
-      <FancyLink href="https://www.instagram.com/p/CewtDvVA7Ph/" position="left"
-        >Video</FancyLink
+      <FancyLink
+        href="https://www.instagram.com/p/CewtDvVA7Ph/"
+        position="left"
       >
+        Video
+      </FancyLink>
     </div>
     <div class="flex flex-row justify-center items-center w-[160%] space-x-2">
-      <span
-        >Creating a scalable, secure, pipeline from Quickbooks to a time series
+      <span>
+        Creating a scalable, secure, pipeline from Quickbooks to a time series
         tree structure (stored in a Postgres DB) during my internship at CFO4ALL
       </span>
     </div>

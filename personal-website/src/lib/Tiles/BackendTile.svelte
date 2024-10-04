@@ -57,7 +57,7 @@
           </FancyLink>
         </div>
         <div class="w-[150%] flex flex-row justify-center space-x-4">
-          <span>Natural Number Parsing NPM Package</span>
+          <span>Natural Number Parsing Package</span>
           <FancyLink
             href="https://www.npmjs.com/package/natural-number-parsing"
             position="right"
