@@ -7,7 +7,7 @@
   import DevopsTile from "$lib/Tiles/DevopsTile.svelte";
   import FrontendTile from "$lib/Tiles/FrontendTile.svelte";
   import BizzybotsTile from "$lib/Tiles/BizzybotsTile.svelte";
-  import BestProjectsTile from "$lib/Tiles/BestProjectsTile.svelte";
+  import BioTile from "$lib/Tiles/BioTile.svelte";
   let fillerHexCount = 1;
   let fillerHexList = Array.from({ length: fillerHexCount }, (_, i) => i);
 
@@ -26,7 +26,7 @@
     </HexTileRow>
   </div>
   <HexTileRow fillerHexCount={offsetFillerHexCount}>
-    <BestProjectsTile />
+    <BioTile />
   </HexTileRow>
   <HexTileRow {fillerHexCount}>
     <UpennTile />

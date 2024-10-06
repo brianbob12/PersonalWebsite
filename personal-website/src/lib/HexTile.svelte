@@ -104,7 +104,7 @@
           class="hex-content"
           in:delay={{ duration: 250, apppear: true }}
           out:delay={{ duration: 250, apppear: false }}
-          style="transform: rotateX(180deg)"
+          style="transform: rotateX(180deg) {mobileMode ? 'scale(0.8)' : ''}"
         >
           <slot name="hover" />
         </div>
@@ -113,6 +113,7 @@
           class="hex-content"
           in:delay={{ duration: 250, apppear: true }}
           out:delay={{ duration: 250, apppear: false }}
+          style="transform: rotateX(0deg) {mobileMode ? 'scale(0.8)' : ''}"
         >
           <slot name="content" />
         </div>

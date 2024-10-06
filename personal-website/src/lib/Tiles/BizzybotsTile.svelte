@@ -3,6 +3,8 @@
   import HexTile from "$lib/HexTile.svelte";
 
   export let mobileMode: boolean = false;
+
+  $: operativeWord = mobileMode ? "Click" : "Hover";
 </script>
 
 <HexTile flipable backgroundColor="#e2e8f0" name="Bizzybots" {mobileMode}>
@@ -30,7 +32,9 @@
       </p>
     </div>
     <div class="absolute bottom-0">
-      <span class="text-gray-500">Hover on hexagon for more info</span>
+      <span class="text-gray-500">
+        {operativeWord} on hexagon for more info
+      </span>
     </div>
   </div>
   <div slot="hover" class="h-full">

@@ -7,6 +7,8 @@
   import TypescriptIcon from "$lib/Logos/TypescriptIcon.svelte";
 
   export let mobileMode: boolean = false;
+
+  $: operativeWord = mobileMode ? "Click" : "Hover";
 </script>
 
 <HexTile flipable backgroundColor="#e2e8f0" name="Frontend" {mobileMode}>
@@ -43,7 +45,9 @@
       <p>Vite, Shadcn</p>
     </div>
     <div class="absolute bottom-0">
-      <span class="text-gray-500">Hover on hexagon for projects</span>
+      <span class="text-gray-500">
+        {operativeWord} on hexagon for projects
+      </span>
     </div>
   </div>
   <div slot="hover" class="h-full">

@@ -5,7 +5,7 @@
   import DevopsTile from "$lib/Tiles/DevopsTile.svelte";
   import FrontendTile from "$lib/Tiles/FrontendTile.svelte";
   import BizzybotsTile from "$lib/Tiles/BizzybotsTile.svelte";
-  import BestProjectsTile from "$lib/Tiles/BestProjectsTile.svelte";
+  import BioTile from "$lib/Tiles/BioTile.svelte";
 
   let innerWidth: number;
 
@@ -25,7 +25,7 @@
     <FrontendTile mobileMode />
     <BackendTile mobileMode />
     <DevopsTile mobileMode />
-    <BestProjectsTile mobileMode />
+    <BioTile mobileMode />
   </div>
 </div>
 
