@@ -2,7 +2,7 @@
   import HexTile from "$lib/HexTile.svelte";
 </script>
 
-<HexTile flipable backgroundColor="#e2e8f0">
+<HexTile flipable backgroundColor="#e2e8f0" name="Upenn">
   <div slot="content" class="flex flex-col items-center space-y-2">
     <div class="flex flex-row justify-center pt-32 w-[200%]">
       <div>

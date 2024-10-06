@@ -3,7 +3,7 @@
   import HexTile from "$lib/HexTile.svelte";
 </script>
 
-<HexTile flipable backgroundColor="#e2e8f0">
+<HexTile flipable backgroundColor="#e2e8f0" name="Cyrus">
   <div slot="content" class="flex flex-col items-center space-y-2 h-full">
     <div class="flex flex-row justify-center pt-40 w-[170%]">
       <div>

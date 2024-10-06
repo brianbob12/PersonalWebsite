@@ -1,9 +1,19 @@
 <script lang="ts">
+  import posthog from "posthog-js";
+
   export let href = "";
   export let position: "left" | "center" | "right" = "center";
+
+  function trackClick() {
+    posthog.capture("$autocapture", {
+      name: "FancyLink Clicked",
+      href: href,
+      position: position,
+    });
+  }
 </script>
 
-<a class="hover-underline-animation {position}" {href}>
+<a class="hover-underline-animation {position}" {href} on:click={trackClick}>
   <slot />
 </a>
 

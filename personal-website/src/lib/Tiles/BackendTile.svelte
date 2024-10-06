@@ -4,7 +4,7 @@
   import TypescriptIcon from "$lib/Logos/TypescriptIcon.svelte";
 </script>
 
-<HexTile flipable backgroundColor="#e2e8f0">
+<HexTile flipable backgroundColor="#e2e8f0" name="Backend">
   <div slot="content" class="flex flex-col items-center space-y-2">
     <div class="flex flex-row justify-center pt-12 w-[200%]">
       <span class="font-bold text-2xl">Backend Development</span>

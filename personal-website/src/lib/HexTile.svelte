@@ -1,5 +1,8 @@
 <script lang="ts">
-  export let flipable = false;
+  import posthog from "posthog-js";
+
+  export let flipable: boolean = false;
+  export let name: string;
 
   export let backgroundColor = "#374151"; //"#f9fafb";
 
@@ -13,7 +16,11 @@
 
   let isHovering = false;
   const handleMouseEnter = () => {
-    if (!flipable) return;
+    if (!flipable) {
+      trackTap();
+      return;
+    }
+    trackFlip();
     isHovering = true;
   };
   const handleMouseLeave = () => {
@@ -34,6 +41,18 @@
         return `opacity: 1`;
       },
     };
+  }
+
+  function trackTap() {
+    posthog.capture("tapTile", {
+      name: name,
+    });
+  }
+
+  function trackFlip() {
+    posthog.capture("flipTile", {
+      name: name,
+    });
   }
 </script>
 

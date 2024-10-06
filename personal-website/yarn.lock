@@ -737,6 +737,11 @@ fdir@^6.2.0:
   resolved "https://registry.yarnpkg.com/fdir/-/fdir-6.4.0.tgz#8e80ab4b18a2ac24beebf9d20d71e1bc2627dbae"
   integrity sha512-3oB133prH1o4j/L5lLW7uOCF1PlD+/It2L0eL/iAqWMB91RBbqTewABqxhj0ibBd90EEmWZq7ntIWzVaWcXTGQ==
 
+fflate@^0.4.8:
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.4.8.tgz#f90b82aefbd8ac174213abb338bd7ef848f0f5ae"
+  integrity sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==
+
 fill-range@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/fill-range/-/fill-range-7.1.1.tgz#44265d3cac07e3ea7dc247516380643754a05292"
@@ -1165,6 +1170,20 @@ postcss@^8.4.23, postcss@^8.4.43, postcss@^8.4.47:
     picocolors "^1.1.0"
     source-map-js "^1.2.1"
 
+posthog-js@^1.166.1:
+  version "1.166.1"
+  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.166.1.tgz#94524d9d8b696b8e99f7f746b69c5741d334de03"
+  integrity sha512-K8IpV8FJTCdwhsXFSbKj5vZ6IXNV079lukpG3cRtst2q5vMmUXRQiks7W3lOZLrjWyuJLKZDUiCeeDIUFORRuQ==
+  dependencies:
+    fflate "^0.4.8"
+    preact "^10.19.3"
+    web-vitals "^4.0.1"
+
+preact@^10.19.3:
+  version "10.24.2"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.24.2.tgz#42179771d3b06e7adb884e3f8127ddd3d99b78f6"
+  integrity sha512-1cSoF0aCC8uaARATfrlz4VCBqE8LwZwRfLgkxJOQwAlQt6ayTmi0D9OF7nXid1POI5SZidFuG9CnlXbDfLqY/Q==
+
 prettier@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.3.3.tgz#30c54fe0be0d8d12e6ae61dbb10109ea00d53105"
@@ -1389,6 +1408,11 @@ svelte-hmr@^0.16.0:
   resolved "https://registry.yarnpkg.com/svelte-hmr/-/svelte-hmr-0.16.0.tgz#9f345b7d1c1662f1613747ed7e82507e376c1716"
   integrity sha512-Gyc7cOS3VJzLlfj7wKS0ZnzDVdv3Pn2IuVeJPk9m2skfhcu5bq3wtIZyQGggr7/Iim5rH5cncyQft/kRLupcnA==
 
+svelte-kit-sst@^2.43.5:
+  version "2.43.5"
+  resolved "https://registry.yarnpkg.com/svelte-kit-sst/-/svelte-kit-sst-2.43.5.tgz#0c8b635fae12caa3c4e2f75db191e63abed825b7"
+  integrity sha512-tvWj/YiPCL3scFcHo/RSYZWtXIuX6g6Mib4MXmDw0JrOtZHzqOCG4kWstTbjnWH4i4XyLPPvxrgSkm35muj4uw==
+
 svelte@^4.2.7:
   version "4.2.19"
   resolved "https://registry.yarnpkg.com/svelte/-/svelte-4.2.19.tgz#4e6e84a8818e2cd04ae0255fcf395bc211e61d4c"
@@ -1525,6 +1549,11 @@ vitefu@^0.2.5:
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/vitefu/-/vitefu-0.2.5.tgz#c1b93c377fbdd3e5ddd69840ea3aa70b40d90969"
   integrity sha512-SgHtMLoqaeeGnd2evZ849ZbACbnwQCIwRH57t18FxcXoZop0uQu0uzlIhJBlF/eWVzuce0sHeqPcDo+evVcg8Q==
+
+web-vitals@^4.0.1:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/web-vitals/-/web-vitals-4.2.3.tgz#270c4baecfbc6ec6fc15da1989e465e5f9b94fb7"
+  integrity sha512-/CFAm1mNxSmOj6i0Co+iGFJ58OS4NRGVP+AWS/l509uIK5a1bSoIVaHz/ZumpHTfHSZBpgrJ+wjfpAOrTHok5Q==
 
 which@^2.0.1:
   version "2.0.2"
