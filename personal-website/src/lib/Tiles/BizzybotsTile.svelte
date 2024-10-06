@@ -1,9 +1,11 @@
 <script lang="ts">
   import FancyLink from "$lib/FancyLink.svelte";
   import HexTile from "$lib/HexTile.svelte";
+
+  export let mobileMode: boolean = false;
 </script>
 
-<HexTile flipable backgroundColor="#e2e8f0" name="Bizzybots">
+<HexTile flipable backgroundColor="#e2e8f0" name="Bizzybots" {mobileMode}>
   <div
     slot="content"
     class="flex flex-col justify-start items-center space-y-8"

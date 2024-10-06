@@ -1,8 +1,10 @@
 <script lang="ts">
   import HexTile from "$lib/HexTile.svelte";
+
+  export let mobileMode: boolean = false;
 </script>
 
-<HexTile flipable backgroundColor="#e2e8f0" name="Upenn">
+<HexTile flipable backgroundColor="#e2e8f0" name="Upenn" {mobileMode}>
   <div slot="content" class="flex flex-col items-center space-y-2">
     <div class="flex flex-row justify-center pt-32 w-[200%]">
       <div>

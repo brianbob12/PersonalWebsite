@@ -5,9 +5,11 @@
   import ReactLogo from "$lib/Logos/ReactLogo.svelte";
   import SvelteLogo from "$lib/Logos/SvelteLogo.svelte";
   import TypescriptIcon from "$lib/Logos/TypescriptIcon.svelte";
+
+  export let mobileMode: boolean = false;
 </script>
 
-<HexTile flipable backgroundColor="#e2e8f0" name="Frontend">
+<HexTile flipable backgroundColor="#e2e8f0" name="Frontend" {mobileMode}>
   <div
     slot="content"
     class="flex flex-col justify-start items-center space-y-2"

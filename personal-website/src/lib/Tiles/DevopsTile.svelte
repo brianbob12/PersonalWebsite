@@ -1,9 +1,11 @@
 <script lang="ts">
   import HexTile from "$lib/HexTile.svelte";
   import DockerLogo from "$lib/Logos/DockerLogo.svelte";
+
+  export let mobileMode: boolean = false;
 </script>
 
-<HexTile backgroundColor="#d6d3d1" name="DevOps">
+<HexTile backgroundColor="#d6d3d1" name="DevOps" {mobileMode}>
   <div
     slot="content"
     class="flex flex-col justify-start items-center space-y-4"

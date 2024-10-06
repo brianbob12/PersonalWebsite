@@ -1,9 +1,11 @@
 <script lang="ts">
   import FancyLink from "$lib/FancyLink.svelte";
   import HexTile from "$lib/HexTile.svelte";
+
+  export let mobileMode: boolean = false;
 </script>
 
-<HexTile backgroundColor="#d6d3d1" name="Best Projects">
+<HexTile backgroundColor="#d6d3d1" name="Best Projects" {mobileMode}>
   <div slot="content" class="flex flex-col items-center space-y-4">
     <div class="flex flex-row justify-center pt-4 w-[200%]">
       <span class="font-bold text-2xl">Projects I'm proud of</span>

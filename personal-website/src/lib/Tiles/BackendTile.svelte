@@ -2,9 +2,11 @@
   import FancyLink from "$lib/FancyLink.svelte";
   import HexTile from "$lib/HexTile.svelte";
   import TypescriptIcon from "$lib/Logos/TypescriptIcon.svelte";
+
+  export let mobileMode: boolean = false;
 </script>
 
-<HexTile flipable backgroundColor="#e2e8f0" name="Backend">
+<HexTile flipable backgroundColor="#e2e8f0" name="Backend" {mobileMode}>
   <div slot="content" class="flex flex-col items-center space-y-2">
     <div class="flex flex-row justify-center pt-12 w-[200%]">
       <span class="font-bold text-2xl">Backend Development</span>

@@ -2,7 +2,8 @@
   import posthog from "posthog-js";
 
   export let flipable: boolean = false;
-  export let name: string;
+  export let name: string = "Empty";
+  export let mobileMode: boolean = false;
 
   export let backgroundColor = "#374151"; //"#f9fafb";
 
@@ -14,18 +15,18 @@
 
   const size = 500;
 
-  let isHovering = false;
+  let isFlipped = false;
   const handleMouseEnter = () => {
-    if (!flipable) {
+    if (!flipable || mobileMode) {
       trackTap();
       return;
     }
     trackFlip();
-    isHovering = true;
+    isFlipped = true;
   };
   const handleMouseLeave = () => {
-    if (!flipable) return;
-    isHovering = false;
+    if (!flipable || mobileMode) return;
+    isFlipped = false;
   };
 
   function delay(
@@ -54,6 +55,13 @@
       name: name,
     });
   }
+
+  function toggleFlipped() {
+    if (!flipable) {
+      return;
+    }
+    isFlipped = !isFlipped;
+  }
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -63,32 +71,35 @@
   on:mouseleave={handleMouseLeave}
   role={flipable ? "button" : "none"}
   tabindex={flipable ? 0 : -1}
-  style={flipable ? (isHovering ? "z-index:20" : "z-index:10") : ""}
+  style={flipable ? (isFlipped ? "z-index:20" : "z-index:10") : ""}
 >
   <div
     class="hexagon"
-    style="width: {size}px; height: {size *
-      root3Over2}px; transform: {isHovering
+    style="width: {size}px; height: {size * root3Over2}px; transform: {isFlipped
       ? 'rotateX(180deg)'
       : 'rotateX(0deg)'}"
+    on:click={toggleFlipped}
+    on:keypress={toggleFlipped}
+    role="button"
+    tabindex={0}
   >
     <div class="hexagon-left">
       <div
-        class="hexagon-left-top {isHovering ? 'hexagon-left-top-hover' : ''}"
+        class="hexagon-left-top {isFlipped ? 'hexagon-left-top-hover' : ''}"
         style="background-color: {backgroundColor}; border-left-width: {angleBorderSize}px; border-color: {borderColor}"
       />
       <div
-        class="hexagon-left-bottom {isHovering
+        class="hexagon-left-bottom {isFlipped
           ? 'hexagon-left-bottom-hover'
           : ''}"
         style="background-color: {backgroundColor}; border-left-width: {angleBorderSize}px; border-color: {borderColor}"
       />
     </div>
     <div
-      class="hexagon-middle {isHovering ? 'hexagon-middle-hover' : ''}"
+      class="hexagon-middle {isFlipped ? 'hexagon-middle-hover' : ''}"
       style="background-color: {backgroundColor}; border-top-width: {borderSize}px; border-bottom-width: {borderSize}px; border-color: {borderColor}"
     >
-      {#if isHovering}
+      {#if isFlipped}
         <div
           class="hex-content"
           in:delay={{ duration: 250, apppear: true }}
@@ -109,11 +120,11 @@
     </div>
     <div class="hexagon-right">
       <div
-        class="hexagon-right-top {isHovering ? 'hexagon-right-top-hover' : ''}"
+        class="hexagon-right-top {isFlipped ? 'hexagon-right-top-hover' : ''}"
         style="background-color: {backgroundColor}; border-right-width: {angleBorderSize}px; border-color: {borderColor}"
       />
       <div
-        class="hexagon-right-bottom {isHovering
+        class="hexagon-right-bottom {isFlipped
           ? 'hexagon-right-bottom-hover'
           : ''}"
         style="background-color: {backgroundColor}; border-right-width: {angleBorderSize}px; border-color: {borderColor}"
