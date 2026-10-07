@@ -56,4 +56,4 @@ jobs:
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.148.0"
           workingDirectory: personal-website
-          command: pages deploy build --project-name=personal-website --branch=main
+          command: pages deploy build --project-name=personal-website --branch=main --commit-hash=${{ github.sha }} --commit-dirty=false
