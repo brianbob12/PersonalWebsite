@@ -1,38 +1,34 @@
-# create-svelte
+# Personal website
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Cyrus Singer's SvelteKit website at https://cyrus.singer.dev.
 
-## Creating a project
+## Development
 
-If you're seeing this, you've probably already done this step. Congrats!
+Use Node.js 22 and Yarn Classic. From this directory:
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+```sh
+yarn install --frozen-lockfile
+yarn dev --host 127.0.0.1
 ```
 
-## Developing
+The local preview runs at http://127.0.0.1:5173.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Checks and build
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```sh
+yarn format:check
+yarn run check
+yarn build
 ```
 
-## Building
+Run `yarn format` to apply formatting. The static production output is written to `build/` for Cloudflare Pages.
 
-To create a production version of your app:
+## Components
 
-```bash
-npm run build
-```
+- `HexShape.svelte` draws the original hexagon and flip animation.
+- `HexTile.svelte` handles hover, touch, keyboard input, and front/back content.
+- `hexGeometry.ts` shares the tile dimensions with the mobile layout.
+- `CyrusTile.svelte` and `CiridaeTile.svelte` contain the visible content and links.
+- `Mobile.svelte` and `NotMobile.svelte` preserve the seven-tile mobile stack and 28-tile desktop pattern.
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Ciridae's logo and wordmark in `static/` are sourced from https://ciridae.com/.

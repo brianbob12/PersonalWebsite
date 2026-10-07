@@ -28,7 +28,7 @@
   }
 
   a.hover-underline-animation:hover {
-    color: #6366f1;
+    color: #000000;
   }
 
   .hover-underline-animation::after {
@@ -39,7 +39,7 @@
     height: 2px;
     bottom: 0;
     left: 0;
-    background-color: #6366f1;
+    background-color: #000000;
     transition: transform 0.25s ease-out;
   }
 

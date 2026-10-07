@@ -1,33 +1,40 @@
 <script lang="ts">
+  import HexTile from "$lib/HexTile.svelte";
   import CyrusTile from "$lib/Tiles/CyrusTile.svelte";
-  import UpennTile from "$lib/Tiles/UpennTile.svelte";
-  import BackendTile from "$lib/Tiles/BackendTile.svelte";
-  import DevopsTile from "$lib/Tiles/DevopsTile.svelte";
-  import FrontendTile from "$lib/Tiles/FrontendTile.svelte";
-  import BizzybotsTile from "$lib/Tiles/BizzybotsTile.svelte";
-  import BioTile from "$lib/Tiles/BioTile.svelte";
+  import CiridaeTile from "$lib/Tiles/CiridaeTile.svelte";
+  import { HEX_WIDTH, HEX_HEIGHT } from "$lib/hexGeometry";
 
-  let innerWidth: number;
-
-  //if the inner width is less that 500px, then we need to scale the hexes down
-  $: scale = innerWidth < 500 ? innerWidth / 500 : 1;
-
-  $: console.log(innerWidth, scale);
+  const blankHexes = Array.from({ length: 5 });
+  const tileCount = 2 + blankHexes.length;
+  let innerWidth = HEX_WIDTH;
+  $: scale = Math.min(1, Math.max(0, (innerWidth - 32) / HEX_WIDTH));
 </script>
 
 <svelte:window bind:innerWidth />
 
-<div class="flex flex-col w-full justify-start items-center">
-  <div style="transform: scale({scale})">
-    <CyrusTile mobileMode />
-    <UpennTile mobileMode />
-    <BizzybotsTile mobileMode />
-    <FrontendTile mobileMode />
-    <BackendTile mobileMode />
-    <DevopsTile mobileMode />
-    <BioTile mobileMode />
+<div class="mobile-hexes">
+  <div
+    style="width: {HEX_WIDTH * scale}px; height: {tileCount *
+      HEX_HEIGHT *
+      scale}px"
+  >
+    <div class="hexes" style="width: {HEX_WIDTH}px; transform: scale({scale})">
+      <CyrusTile mobileMode />
+      <CiridaeTile mobileMode />
+      {#each blankHexes as _}
+        <HexTile mobileMode />
+      {/each}
+    </div>
   </div>
 </div>
 
 <style>
+  .mobile-hexes {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+  }
+  .hexes {
+    transform-origin: top left;
+  }
 </style>

@@ -2,22 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-span{
+span,
+li,
+p,
+a {
   font-family: monospace;
 }
 
-li{
-  font-family: monospace;
-}
-
-p{
-  font-family: monospace;
-}
-
-a{
-  font-family: monospace;
-}
-
-body{
-  background-color: #1f2937;
+body {
+  background-color: #000000;
 }

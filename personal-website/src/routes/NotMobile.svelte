@@ -1,52 +1,39 @@
 <script lang="ts">
   import HexTile from "$lib/HexTile.svelte";
   import CyrusTile from "$lib/Tiles/CyrusTile.svelte";
-  import UpennTile from "$lib/Tiles/UpennTile.svelte";
-  import BackendTile from "$lib/Tiles/BackendTile.svelte";
   import HexTileRow from "$lib/HexTileRow.svelte";
-  import DevopsTile from "$lib/Tiles/DevopsTile.svelte";
-  import FrontendTile from "$lib/Tiles/FrontendTile.svelte";
-  import BizzybotsTile from "$lib/Tiles/BizzybotsTile.svelte";
-  import BioTile from "$lib/Tiles/BioTile.svelte";
-  let fillerHexCount = 1;
-  let fillerHexList = Array.from({ length: fillerHexCount }, (_, i) => i);
-
-  let offsetFillerHexCount = 1;
-  let offsetFillerHexList = Array.from(
-    { length: offsetFillerHexCount },
-    (_, i) => i,
-  );
+  import CiridaeTile from "$lib/Tiles/CiridaeTile.svelte";
 </script>
 
 <div class="all-hexes-container">
   <div class="first-row">
-    <HexTileRow {fillerHexCount}>
+    <HexTileRow>
       <HexTile />
       <HexTile />
     </HexTileRow>
   </div>
-  <HexTileRow fillerHexCount={offsetFillerHexCount}>
-    <BioTile />
-  </HexTileRow>
-  <HexTileRow {fillerHexCount}>
-    <UpennTile />
-    <BizzybotsTile />
-  </HexTileRow>
-  <HexTileRow fillerHexCount={offsetFillerHexCount}>
+  <HexTileRow>
     <CyrusTile />
   </HexTileRow>
-  <HexTileRow {fillerHexCount}>
-    <FrontendTile />
-    <BackendTile />
-  </HexTileRow>
-  <HexTileRow fillerHexCount={offsetFillerHexCount}>
-    <DevopsTile />
-  </HexTileRow>
-  <HexTileRow {fillerHexCount}>
+  <HexTileRow>
     <HexTile />
     <HexTile />
   </HexTileRow>
-  <HexTileRow fillerHexCount={offsetFillerHexCount}>
+  <HexTileRow>
+    <CiridaeTile />
+  </HexTileRow>
+  <HexTileRow>
+    <HexTile />
+    <HexTile />
+  </HexTileRow>
+  <HexTileRow>
+    <HexTile />
+  </HexTileRow>
+  <HexTileRow>
+    <HexTile />
+    <HexTile />
+  </HexTileRow>
+  <HexTileRow>
     <HexTile />
   </HexTileRow>
 </div>
@@ -54,11 +41,8 @@
 <style>
   .all-hexes-container {
     display: flex;
-    height: 100%;
     flex-direction: column;
-    gap: -250px;
     overflow-x: hidden;
-    height: 100vh;
     align-items: center;
     height: 100vh;
   }
