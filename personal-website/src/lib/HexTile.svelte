@@ -1,6 +1,7 @@
 <script lang="ts">
   import posthog from "posthog-js";
   import HexShape from "./HexShape.svelte";
+  import HexFaces from "./HexFaces.svelte";
 
   export let flippable = false;
   export let name = "Empty";
@@ -10,14 +11,16 @@
   let isFlipped = false;
   $: borderColor = flippable ? "#000000" : "#ffffff";
 
-  function handleMouseEnter() {
-    if (!flippable || mobileMode) return;
-    posthog.capture("flipTile", { name });
-    isFlipped = true;
+  function setFlipped(value: boolean) {
+    if (isFlipped === value) return;
+    isFlipped = value;
+    if (value) posthog.capture("flipTile", { name });
   }
 
-  function handleMouseLeave() {
-    if (!mobileMode) isFlipped = false;
+  function handlePointer(event: PointerEvent) {
+    if (!mobileMode && event.pointerType === "mouse") {
+      setFlipped(event.type === "pointerenter");
+    }
   }
 
   function toggleFlipped(event: MouseEvent | KeyboardEvent) {
@@ -30,50 +33,34 @@
     if (event instanceof KeyboardEvent) {
       if (event.key !== "Enter" && event.key !== " ") return;
       event.preventDefault();
+    } else if (
+      !mobileMode &&
+      event.detail > 0 &&
+      (!("pointerType" in event) || event.pointerType === "mouse")
+    ) {
+      // Desktop mouse input is controlled by hover, not also by clicks.
+      return;
     }
-    posthog.capture("flipTile", { name });
-    isFlipped = !isFlipped;
-  }
-
-  function delay(_node: HTMLElement, { appearing }: { appearing: boolean }) {
-    return { duration: 250, css: () => `opacity: ${appearing ? 0 : 1}` };
+    setFlipped(!isFlipped);
   }
 </script>
 
 {#if flippable}
   <div
     class="hex-container"
-    on:mouseenter={handleMouseEnter}
-    on:mouseleave={handleMouseLeave}
+    on:pointerenter={handlePointer}
+    on:pointerleave={handlePointer}
     on:click={toggleFlipped}
     on:keydown={toggleFlipped}
     role="button"
     tabindex="0"
     aria-label={`${name} details`}
     aria-pressed={isFlipped}
-    style:z-index={isFlipped ? 20 : 10}
   >
-    <HexShape {backgroundColor} {borderColor} {isFlipped}>
-      {#if isFlipped}
-        <div
-          class="hex-content"
-          in:delay={{ appearing: true }}
-          out:delay={{ appearing: false }}
-          style="transform: rotateX(180deg) {mobileMode ? 'scale(0.8)' : ''}"
-        >
-          <slot name="hover" />
-        </div>
-      {:else}
-        <div
-          class="hex-content"
-          in:delay={{ appearing: true }}
-          out:delay={{ appearing: false }}
-          style="transform: rotateX(0deg) {mobileMode ? 'scale(0.8)' : ''}"
-        >
-          <slot name="content" />
-        </div>
-      {/if}
-    </HexShape>
+    <HexFaces {backgroundColor} {borderColor} {isFlipped} {mobileMode}>
+      <slot name="content" slot="front" />
+      <slot name="hover" slot="back" />
+    </HexFaces>
   </div>
 {:else}
   <HexShape {backgroundColor} {borderColor} />
@@ -81,10 +68,9 @@
 
 <style>
   .hex-container {
-    transition: transform 0.3s ease;
-  }
-  .hex-content {
-    height: 100%;
-    padding-block: 0.5rem;
+    position: relative;
+    z-index: 10;
+    /* Keep the pointer target still while the faces rotate inside it. */
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
   }
 </style>

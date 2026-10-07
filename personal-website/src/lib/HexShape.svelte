@@ -3,15 +3,13 @@
 
   export let backgroundColor: string;
   export let borderColor: string;
-  export let isFlipped = false;
+  export let active = false;
 </script>
 
 <div
   class="hexagon"
-  class:is-flipped={isFlipped}
-  style="width: {HEX_WIDTH}px; height: {HEX_HEIGHT}px; --hex-background: {backgroundColor}; --hex-border: {borderColor}; transform: rotateX({isFlipped
-    ? 180
-    : 0}deg)"
+  class:active
+  style="width: {HEX_WIDTH}px; height: {HEX_HEIGHT}px; --hex-background: {backgroundColor}; --hex-border: {borderColor}"
 >
   <div class="hexagon-left">
     <div class="hexagon-left-top" />
@@ -28,7 +26,6 @@
   .hexagon {
     display: flex;
     overflow: hidden;
-    transition: transform 1000ms ease;
   }
   .hexagon-left,
   .hexagon-right {
@@ -75,11 +72,11 @@
     background-color: var(--hex-background);
     border-block: 4px solid var(--hex-border);
   }
-  .is-flipped .hexagon-left-top::before,
-  .is-flipped .hexagon-left-bottom::before,
-  .is-flipped .hexagon-middle::before,
-  .is-flipped .hexagon-right-top::before,
-  .is-flipped .hexagon-right-bottom::before {
+  .active .hexagon-left-top::before,
+  .active .hexagon-left-bottom::before,
+  .active .hexagon-middle::before,
+  .active .hexagon-right-top::before,
+  .active .hexagon-right-bottom::before {
     content: "";
     position: absolute;
     top: 50%;
@@ -89,12 +86,12 @@
     height: 100%;
     animation: rippleTopBottom 1s ease-in-out infinite;
   }
-  .is-flipped .hexagon-left-top::before,
-  .is-flipped .hexagon-left-bottom::before {
+  .active .hexagon-left-top::before,
+  .active .hexagon-left-bottom::before {
     animation-name: rippleLeft;
   }
-  .is-flipped .hexagon-right-top::before,
-  .is-flipped .hexagon-right-bottom::before {
+  .active .hexagon-right-top::before,
+  .active .hexagon-right-bottom::before {
     animation-name: rippleRight;
   }
 
@@ -125,6 +122,11 @@
     to {
       border-right: 10px solid #000000;
       opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .active div::before {
+      animation: none;
     }
   }
 </style>
