@@ -23,6 +23,19 @@ yarn build
 
 Run `yarn format` to apply formatting. The static production output is written to `build/` for Cloudflare Pages.
 
+## Deployment
+
+The [Deploy website workflow](../.github/workflows/deploy.yml) checks and builds the site, then deploys `build/` to the existing Cloudflare Pages project `personal-website` on every push to `main`. Failed checks prevent deployment. Production deployments run one at a time.
+
+You can also run it manually from GitHub Actions with `main` selected. Other branches cannot deploy production through this workflow.
+
+The repository's GitHub Actions settings need:
+
+- Secret `CLOUDFLARE_API_TOKEN`: a dedicated API token with **Account → Cloudflare Pages → Edit**, restricted to the account hosting this site.
+- Variable `CLOUDFLARE_ACCOUNT_ID`: the Cloudflare account ID.
+
+When rotating the token, update the repository secret. Keep tokens out of source control.
+
 ## Components
 
 - `HexShape.svelte` draws the original hexagon and border ripple.
