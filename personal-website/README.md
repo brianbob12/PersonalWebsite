@@ -25,7 +25,9 @@ Run `yarn format` to apply formatting. The static production output is written t
 
 ## Deployment
 
-The [Deploy website workflow](../.github/workflows/deploy.yml) checks and builds the site, then deploys `build/` to the existing Cloudflare Pages project `personal-website` on every push to `main`. Failed checks prevent deployment. Production deployments run one at a time.
+The [Deploy website workflow](../.github/workflows/deploy.yml) checks formatting, types, and the build for pull requests targeting `main` and for every push to `main`. The `Build website` check must pass before a pull request can merge. `main` requires linear history and uses squash merging.
+
+For pushes to `main`, the build job uploads only `build/` as an immutable artifact retained for one day. A separate job on a fresh runner downloads that exact artifact, verifies its digest, and deploys it to the existing Cloudflare Pages project `personal-website`. The deploy runner does not check out application source or install application dependencies. Only the deployment step references the Cloudflare token. Failed builds prevent deployment, and production deployments run one at a time.
 
 You can also run it manually from GitHub Actions with `main` selected. Other branches cannot deploy production through this workflow.
 
