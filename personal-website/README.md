@@ -4,7 +4,7 @@ Cyrus Singer's SvelteKit website at https://cyrus.singer.dev.
 
 ## Development
 
-Use Node.js 22 and Yarn Classic. From this directory:
+Use Node.js 22.12 or newer and Yarn Classic. From this directory:
 
 ```sh
 yarn install --frozen-lockfile
@@ -22,6 +22,24 @@ yarn build
 ```
 
 Run `yarn format` to apply formatting. The static production output is written to `build/` for Cloudflare Pages.
+
+## Browser regression tests
+
+After installing dependencies, install the test browser and build the site:
+
+```sh
+yarn playwright install chromium
+yarn build
+yarn test:e2e
+```
+
+The tests start a local production preview and check desktop rendering, hover reversals, keyboard and link behavior, the responsive breakpoint, reduced motion, and mobile taps at 320px and 390px. They also check for browser runtime errors. Analytics requests are intercepted so tests do not send events to production analytics.
+
+To use an installed Chrome browser instead, set `PLAYWRIGHT_CHANNEL=chrome` in your environment before running `yarn test:e2e`.
+
+The Check website workflow runs the dependency audit, formatting and type checks, build, and browser tests for pull requests affecting the site.
+
+Tailwind 4 runs through its Vite plugin and scans `src/` through the source directive in `src/app.css`. It requires modern browsers (Safari 16.4+, Chrome 111+, or Firefox 128+). The scoped Yarn resolution for SvelteKit's `cookie` dependency keeps it on the patched 0.7 release while SvelteKit 2 declares the older 0.6 range; remove that override when SvelteKit updates its declared range.
 
 ## Deployment
 

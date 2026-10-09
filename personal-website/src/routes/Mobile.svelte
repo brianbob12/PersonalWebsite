@@ -33,6 +33,7 @@
     display: flex;
     justify-content: center;
     padding: 16px;
+    overflow-x: clip;
   }
   .hexes {
     transform-origin: top left;
