@@ -1,8 +1,13 @@
 <script lang="ts">
   import posthog from "posthog-js";
 
-  export let href = "";
-  export let position: "left" | "center" | "right" = "center";
+  interface Props {
+    href?: string;
+    position?: "left" | "center" | "right";
+    children?: import("svelte").Snippet;
+  }
+
+  let { href = "", position = "center", children }: Props = $props();
 
   function trackClick() {
     posthog.capture("$autocapture", {
@@ -13,8 +18,8 @@
   }
 </script>
 
-<a class="hover-underline-animation {position}" {href} on:click={trackClick}>
-  <slot />
+<a class="hover-underline-animation {position}" {href} onclick={trackClick}>
+  {@render children?.()}
 </a>
 
 <style>

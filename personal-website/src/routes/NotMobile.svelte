@@ -1,8 +1,8 @@
 <script lang="ts">
-  import HexTile from "$lib/HexTile.svelte";
-  import CyrusTile from "$lib/Tiles/CyrusTile.svelte";
-  import HexTileRow from "$lib/HexTileRow.svelte";
-  import CiridaeTile from "$lib/Tiles/CiridaeTile.svelte";
+  import HexTile from "#lib/HexTile.svelte";
+  import CyrusTile from "#lib/Tiles/CyrusTile.svelte";
+  import HexTileRow from "#lib/HexTileRow.svelte";
+  import CiridaeTile from "#lib/Tiles/CiridaeTile.svelte";
 </script>
 
 <div class="all-hexes-container">

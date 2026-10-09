@@ -1,10 +1,10 @@
 # Personal website
 
-Cyrus Singer's SvelteKit website at https://cyrus.singer.dev.
+Cyrus Singer's Svelte 5 / SvelteKit 3 website at https://cyrus.singer.dev.
 
 ## Development
 
-Use Node.js 22 and Yarn Classic. From this directory:
+Use Node.js 22.17 or newer and Yarn Classic 1.22.22. From this directory:
 
 ```sh
 yarn install --frozen-lockfile

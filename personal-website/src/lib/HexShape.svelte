@@ -1,9 +1,19 @@
 <script lang="ts">
   import { HEX_WIDTH, HEX_HEIGHT } from "./hexGeometry";
 
-  export let backgroundColor: string;
-  export let borderColor: string;
-  export let active = false;
+  interface Props {
+    backgroundColor: string;
+    borderColor: string;
+    active?: boolean;
+    children?: import("svelte").Snippet;
+  }
+
+  let {
+    backgroundColor,
+    borderColor,
+    active = false,
+    children,
+  }: Props = $props();
 </script>
 
 <div
@@ -12,13 +22,13 @@
   style="width: {HEX_WIDTH}px; height: {HEX_HEIGHT}px; --hex-background: {backgroundColor}; --hex-border: {borderColor}"
 >
   <div class="hexagon-left">
-    <div class="hexagon-left-top" />
-    <div class="hexagon-left-bottom" />
+    <div class="hexagon-left-top"></div>
+    <div class="hexagon-left-bottom"></div>
   </div>
-  <div class="hexagon-middle"><slot /></div>
+  <div class="hexagon-middle">{@render children?.()}</div>
   <div class="hexagon-right">
-    <div class="hexagon-right-top" />
-    <div class="hexagon-right-bottom" />
+    <div class="hexagon-right-top"></div>
+    <div class="hexagon-right-bottom"></div>
   </div>
 </div>
 

@@ -1,13 +1,13 @@
 <script lang="ts">
-  import HexTile from "$lib/HexTile.svelte";
-  import CyrusTile from "$lib/Tiles/CyrusTile.svelte";
-  import CiridaeTile from "$lib/Tiles/CiridaeTile.svelte";
-  import { HEX_WIDTH, HEX_HEIGHT } from "$lib/hexGeometry";
+  import HexTile from "#lib/HexTile.svelte";
+  import CyrusTile from "#lib/Tiles/CyrusTile.svelte";
+  import CiridaeTile from "#lib/Tiles/CiridaeTile.svelte";
+  import { HEX_WIDTH, HEX_HEIGHT } from "#lib/hexGeometry.ts";
 
   const blankHexes = Array.from({ length: 5 });
   const tileCount = 2 + blankHexes.length;
-  let innerWidth = HEX_WIDTH;
-  $: scale = Math.min(1, Math.max(0, (innerWidth - 32) / HEX_WIDTH));
+  let innerWidth = $state(HEX_WIDTH);
+  let scale = $derived(Math.min(1, Math.max(0, (innerWidth - 32) / HEX_WIDTH)));
 </script>
 
 <svelte:window bind:innerWidth />
