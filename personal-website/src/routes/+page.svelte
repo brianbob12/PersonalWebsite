@@ -2,11 +2,11 @@
   import Mobile from "./Mobile.svelte";
   import NotMobile from "./NotMobile.svelte";
 
-  let innerWidth = 0;
+  let innerWidth = $state(0);
 
   const mobileThreshold = 1200;
 
-  $: isMobile = innerWidth < mobileThreshold;
+  let isMobile = $derived(innerWidth < mobileThreshold);
 </script>
 
 <svelte:window bind:innerWidth />

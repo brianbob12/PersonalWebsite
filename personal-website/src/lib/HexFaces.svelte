@@ -2,10 +2,23 @@
   import HexShape from "./HexShape.svelte";
   import { HEX_WIDTH, HEX_HEIGHT } from "./hexGeometry";
 
-  export let backgroundColor: string;
-  export let borderColor: string;
-  export let isFlipped = false;
-  export let mobileMode = false;
+  interface Props {
+    backgroundColor: string;
+    borderColor: string;
+    isFlipped?: boolean;
+    mobileMode?: boolean;
+    front?: import("svelte").Snippet;
+    back?: import("svelte").Snippet;
+  }
+
+  let {
+    backgroundColor,
+    borderColor,
+    isFlipped = false,
+    mobileMode = false,
+    front,
+    back,
+  }: Props = $props();
 </script>
 
 <!-- One rotation owns visibility; neither face is removed during a reversal. -->
@@ -18,12 +31,12 @@
 >
   <div class="hex-face front" aria-hidden={isFlipped} inert={isFlipped}>
     <HexShape {backgroundColor} {borderColor}>
-      <div class="hex-content"><slot name="front" /></div>
+      <div class="hex-content">{@render front?.()}</div>
     </HexShape>
   </div>
   <div class="hex-face back" aria-hidden={!isFlipped} inert={!isFlipped}>
     <HexShape {backgroundColor} {borderColor} active={isFlipped}>
-      <div class="hex-content"><slot name="back" /></div>
+      <div class="hex-content">{@render back?.()}</div>
     </HexShape>
   </div>
 </div>

@@ -1,15 +1,22 @@
 <script lang="ts">
   import HexTile from "./HexTile.svelte";
-  export let fillerHexCount = 1;
+  interface Props {
+    fillerHexCount?: number;
+    children?: import("svelte").Snippet;
+  }
 
-  $: fillerHexList = Array.from({ length: fillerHexCount }, (_, i) => i);
+  let { fillerHexCount = 1, children }: Props = $props();
+
+  let fillerHexList = $derived(
+    Array.from({ length: fillerHexCount }, (_, i) => i),
+  );
 </script>
 
 <div class="hex-row">
   {#each fillerHexList as hex}
     <HexTile />
   {/each}
-  <slot />
+  {@render children?.()}
   {#each fillerHexList as hex}
     <HexTile />
   {/each}

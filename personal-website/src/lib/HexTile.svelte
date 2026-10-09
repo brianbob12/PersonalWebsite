@@ -3,13 +3,26 @@
   import HexShape from "./HexShape.svelte";
   import HexFaces from "./HexFaces.svelte";
 
-  export let flippable = false;
-  export let name = "Empty";
-  export let mobileMode = false;
-  export let backgroundColor = "#000000";
+  interface Props {
+    flippable?: boolean;
+    name?: string;
+    mobileMode?: boolean;
+    backgroundColor?: string;
+    content?: import("svelte").Snippet;
+    hover?: import("svelte").Snippet;
+  }
 
-  let isFlipped = false;
-  $: borderColor = flippable ? "#000000" : "#ffffff";
+  let {
+    flippable = false,
+    name = "Empty",
+    mobileMode = false,
+    backgroundColor = "#000000",
+    content,
+    hover,
+  }: Props = $props();
+
+  let isFlipped = $state(false);
+  let borderColor = $derived(flippable ? "#000000" : "#ffffff");
 
   function setFlipped(value: boolean) {
     if (isFlipped === value) return;
@@ -48,18 +61,22 @@
 {#if flippable}
   <div
     class="hex-container"
-    on:pointerenter={handlePointer}
-    on:pointerleave={handlePointer}
-    on:click={toggleFlipped}
-    on:keydown={toggleFlipped}
+    onpointerenter={handlePointer}
+    onpointerleave={handlePointer}
+    onclick={toggleFlipped}
+    onkeydown={toggleFlipped}
     role="button"
     tabindex="0"
     aria-label={`${name} details`}
     aria-pressed={isFlipped}
   >
     <HexFaces {backgroundColor} {borderColor} {isFlipped} {mobileMode}>
-      <slot name="content" slot="front" />
-      <slot name="hover" slot="back" />
+      {#snippet front()}
+        {@render content?.()}
+      {/snippet}
+      {#snippet back()}
+        {@render hover?.()}
+      {/snippet}
     </HexFaces>
   </div>
 {:else}
