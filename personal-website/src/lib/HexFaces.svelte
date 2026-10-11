@@ -54,6 +54,9 @@
   .hex-face {
     position: absolute;
     inset: 0;
+    /* Gecko needs each face transformed to hide its entire backface. */
+    transform: rotateX(0deg);
+    transform-style: preserve-3d;
     backface-visibility: hidden;
   }
   .hex-face.back {
