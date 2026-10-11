@@ -56,6 +56,12 @@ When rotating the token, update the repository secret. Keep tokens out of source
 
 ## Components
 
+The site self-hosts JetBrains Mono v2.304 in regular (400) and bold (700)
+WOFF2 files from the [official release](https://github.com/JetBrains/JetBrainsMono/tree/v2.304/fonts/webfonts).
+The fonts and their SIL Open Font License are in `static/fonts/`. Both weights
+are preloaded, and fallback text remains visible while they load. The name
+stays on one line with either the supplied font or a system fallback.
+
 - `HexShape.svelte` draws the original hexagon and border ripple.
 - `HexFaces.svelte` keeps both faces mounted and rotates them together, so interrupted flips reverse without content-swap timers.
 - `HexTile.svelte` handles hover, touch, keyboard input, and front/back content.

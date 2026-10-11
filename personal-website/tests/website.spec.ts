@@ -24,6 +24,59 @@ test.afterEach(async ({ page }) => {
   expect(runtimeErrors.get(page), "No browser runtime errors").toEqual([]);
 });
 
+for (const width of [320, 390, 1440]) {
+  test(`name stays centered on one line at ${width}px with loaded and unavailable fonts`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/", { waitUntil: "networkidle" });
+    const heading = page.getByText("Cyrus Singer", { exact: true });
+    await page.evaluate(() => document.fonts.ready);
+    expect(
+      await page.evaluate(() =>
+        Array.from(document.fonts)
+          .filter((face) => face.family.includes("JetBrains Mono"))
+          .map((face) => ({ weight: face.weight, status: face.status }))
+          .sort((a, b) => a.weight.localeCompare(b.weight)),
+      ),
+    ).toEqual([
+      { weight: "400", status: "loaded" },
+      { weight: "700", status: "loaded" },
+    ]);
+
+    for (const fontsAvailable of [true, false]) {
+      if (!fontsAvailable) {
+        await page.route("**/fonts/*.woff2", (route) => route.abort());
+        await page.reload({ waitUntil: "networkidle" });
+        await page.evaluate(() => document.fonts.ready);
+        expect(
+          await page.evaluate(() =>
+            Array.from(document.fonts)
+              .filter((face) => face.family.includes("JetBrains Mono"))
+              .map((face) => face.status),
+          ),
+        ).toEqual(["error", "error"]);
+      }
+      await expect(heading).toBeVisible();
+      const layout = await heading.evaluate((element) => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const text = range.getBoundingClientRect();
+        const tile = element.closest(".hex-container")!.getBoundingClientRect();
+        return {
+          lines: range.getClientRects().length,
+          centered:
+            Math.abs(
+              text.left + text.width / 2 - (tile.left + tile.width / 2),
+            ) < 1,
+          insideTile: text.left >= tile.left && text.right <= tile.right,
+        };
+      });
+      expect(layout).toEqual({ lines: 1, centered: true, insideTile: true });
+    }
+  });
+}
+
 test.describe("desktop", () => {
   test.use({ viewport: { width: 1440, height: 1000 } });
 
