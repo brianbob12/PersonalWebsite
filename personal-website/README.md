@@ -25,6 +25,10 @@ Run `yarn format` to apply formatting. The static production output is written t
 
 ## Browser regression tests
 
+See [Browser compatibility](COMPATIBILITY.md) for supported versions, required
+interaction behavior, Safari/iOS constraints, verification limits, and primary
+sources behind the requirements.
+
 Install the test browsers, build the site, and run the scenarios:
 
 ```sh
