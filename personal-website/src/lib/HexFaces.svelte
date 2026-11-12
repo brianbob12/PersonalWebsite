@@ -19,22 +19,61 @@
     front,
     back,
   }: Props = $props();
+
+  let rotor: HTMLDivElement;
+  let showingBack = $state(false);
+
+  $effect(() => {
+    const target = isFlipped;
+    let frame = 0;
+
+    function updateVisibleFace() {
+      // WebKit can paint transformed descendants despite backface-visibility.
+      // Read the actual animated angle, including reversals, instead of using
+      // the destination state or a separate content-swap timer.
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(rotor).transform);
+      showingBack = matrix.m22 < 0;
+      if (
+        rotor
+          .getAnimations()
+          .some((animation) => animation.playState !== "finished")
+      ) {
+        frame = requestAnimationFrame(updateVisibleFace);
+      } else {
+        showingBack = target;
+      }
+    }
+
+    updateVisibleFace();
+    return () => cancelAnimationFrame(frame);
+  });
 </script>
 
 <!-- One rotation owns visibility; neither face is removed during a reversal. -->
 <div
+  bind:this={rotor}
   class="hex-rotor"
   class:is-flipped={isFlipped}
   style="width: {HEX_WIDTH}px; height: {HEX_HEIGHT}px; --content-scale: {mobileMode
     ? 0.8
     : 1}"
 >
-  <div class="hex-face front" aria-hidden={isFlipped} inert={isFlipped}>
+  <div
+    class="hex-face front"
+    class:is-visible={!showingBack}
+    aria-hidden={isFlipped}
+    inert={isFlipped}
+  >
     <HexShape {backgroundColor} {borderColor}>
       <div class="hex-content">{@render front?.()}</div>
     </HexShape>
   </div>
-  <div class="hex-face back" aria-hidden={!isFlipped} inert={!isFlipped}>
+  <div
+    class="hex-face back"
+    class:is-visible={showingBack}
+    aria-hidden={!isFlipped}
+    inert={!isFlipped}
+  >
     <HexShape {backgroundColor} {borderColor} active={isFlipped}>
       <div class="hex-content">{@render back?.()}</div>
     </HexShape>
@@ -54,10 +93,16 @@
   .hex-face {
     position: absolute;
     inset: 0;
-    /* Keep each face's descendants together as one backface-cullable surface. */
+    /* Keep each face's descendants together as one surface. Opacity avoids
+       WebKit's inconsistent descendant backface culling without removing DOM. */
     transform: rotateX(0deg);
     transform-style: flat;
-    backface-visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hex-face.is-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
   .hex-face.back {
     transform: rotateX(180deg);

@@ -54,6 +54,14 @@ the 3D context into transformed descendants can expose separately rendered
 content. This is a **theoretical explanation** for the reported immediate Safari
 content change, not a confirmed diagnosis of a particular Safari release.
 
+The regression matrix subsequently showed rear-face painting in WebKit despite
+flattening each face. The implementation therefore samples the rotor's actual
+animated transformation matrix each animation frame and selects the facing
+surface with opacity and pointer-event gating. Both surfaces stay mounted; the
+choice follows the current angle during reversals, rather than a timeout or the
+destination state. This also avoids relying on native backface culling in capture
+paths where it is broken. The frame-painting regression runs on Windows too.
+
 Use the [CSS Transforms flip-card model][transforms] as the reference. Its
 rotor preserves 3D while faces flatten their content. The [W3C discussion of
 descendant backface visibility][backface-discussion] explains the interoperability

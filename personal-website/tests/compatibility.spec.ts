@@ -48,10 +48,6 @@ for (const name of ["Cyrus", "Ciridae"] as const) {
   test(`${name}: only the facing surface paints before and after the midpoint`, async ({
     page,
   }, testInfo) => {
-    test.skip(
-      process.platform === "win32" && testInfo.project.name === "webkit",
-      "Windows WebKit captures ignore backface culling; Linux and macOS run this assertion (Playwright #21620).",
-    );
     const tile = detailsTile(page, name);
     await tile.focus();
     await expectOnlyFacePaints(page, tile, "front", testInfo, "settled-front");
