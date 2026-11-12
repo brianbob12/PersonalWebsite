@@ -32,7 +32,7 @@ sources behind the requirements.
 Install the test browsers, build the site, and run the scenarios:
 
 ```sh
-yarn playwright install chromium firefox
+yarn playwright install chromium firefox webkit
 yarn build
 yarn test:e2e
 ```
@@ -40,9 +40,43 @@ yarn test:e2e
 `tests/website.spec.ts` describes the visible behavior; `tests/website.helpers.ts`
 contains browser measurements and shared assertions. Tests cover font loading and
 fallback, desktop interactions, and touch input at phone sizes in Chromium and
-Firefox. Analytics requests are blocked. Set `PLAYWRIGHT_CHANNEL=chrome` to use
+Firefox and WebKit. `tests/compatibility.spec.ts` checks animation frames, halfway
+timing, reversals, legacy click events, mouse deduplication, and viewport behavior.
+`tests/touch.compat.spec.ts` runs real touchscreen input in WebKit phone/tablet
+emulation. Analytics requests are blocked. Set `PLAYWRIGHT_CHANNEL=chrome` to use
 installed Chrome for the Chromium project, or pass `--project=chromium` or
-`--project=firefox` to run one browser.
+`--project=firefox`, `--project=webkit`, `--project=webkit-iphone`, or
+`--project=webkit-ipad` to run one profile.
+
+The Check website workflow runs four exact Playwright releases against their own
+matching Chromium, Firefox, and WebKit binaries on Ubuntu 22.04, plus current
+WebKit on macOS. Reports include the actual browser version and screenshots/traces
+for failures. The app is built from the frozen application lockfile before the
+disposable CI test runner is changed. No application dependency changes from a
+matrix job are committed or deployed.
+
+| Playwright | Chromium      | Firefox | WebKit |
+| ---------- | ------------- | ------- | ------ |
+| 1.40.1     | 120.0.6099.28 | 119.0   | 17.4   |
+| 1.48.2     | 130.0.6723.31 | 131.0   | 18.0   |
+| 1.56.1     | 141.0.7390.37 | 142.0.1 | 26.0   |
+| 1.64.0     | 156.0.8078.4  | 157.0   | 27.2   |
+
+Versions come from each release's `packages/playwright-core/browsers.json`:
+[1.40.1](https://github.com/microsoft/playwright/blob/v1.40.1/packages/playwright-core/browsers.json),
+[1.48.2](https://github.com/microsoft/playwright/blob/v1.48.2/packages/playwright-core/browsers.json),
+[1.56.1](https://github.com/microsoft/playwright/blob/v1.56.1/packages/playwright-core/browsers.json),
+[1.64.0](https://github.com/microsoft/playwright/blob/v1.64.0/packages/playwright-core/browsers.json).
+Platform overrides can select a different WebKit binary; the run's attached
+browser version is authoritative. These snapshots do not certify the exact
+minimum supported releases, branded Safari/Edge, or actual iOS hardware; see the
+compatibility document's real-device release checks.
+
+To reproduce an older snapshot locally, use a disposable checkout, build with the
+frozen lockfile, then run `yarn add --dev --exact --ignore-scripts
+@playwright/test@1.48.2`, install its browsers, and run the suite. Do not commit the
+temporary package/lockfile changes. Windows WebKit skips only the known-broken
+backface screenshot capture assertion; Linux and macOS execute it.
 
 ## Deployment
 

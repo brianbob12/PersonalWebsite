@@ -7,6 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:e2e": "playwright test",
+    "check:tests": "tsc --project tests/tsconfig.json",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
