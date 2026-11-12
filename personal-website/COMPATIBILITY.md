@@ -62,6 +62,16 @@ choice follows the current angle during reversals, rather than a timeout or the
 destination state. This also avoids relying on native backface culling in capture
 paths where it is broken. The frame-painting regression runs on Windows too.
 
+Paint comparisons decode PNG pixels rather than comparing compressed file bytes.
+Only two antialiased pixels, each changing by at most 16/255 per channel, are
+allowed to differ; this covers the observed Chromium 120 edge repaint without
+accepting meaningful rear-face content. There are no cross-browser font baselines.
+
+The logo SVG has explicit intrinsic dimensions as well as its viewBox, avoiding
+[older Firefox's zero natural-size behavior][svg-size]. The phone stack measures
+its own container and clips the unscaled bounds before they can widen an iOS
+layout viewport and change its auto-zoom/hit-testing coordinates.
+
 Use the [CSS Transforms flip-card model][transforms] as the reference. Its
 rotor preserves 3D while faces flatten their content. The [W3C discussion of
 descendant backface visibility][backface-discussion] explains the interoperability
@@ -149,3 +159,4 @@ this check; it does not certify these combinations.
 [pw-releases]: https://playwright.dev/docs/release-notes
 [pw-projects]: https://playwright.dev/docs/test-projects
 [pw-screenshot]: https://github.com/microsoft/playwright/issues/21620
+[svg-size]: https://bugzilla.mozilla.org/show_bug.cgi?id=1935269
