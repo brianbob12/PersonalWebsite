@@ -22,6 +22,7 @@
   }: Props = $props();
 
   let isFlipped = $state(false);
+  let activationPointerType: string | undefined;
   let borderColor = $derived(flippable ? "#000000" : "#ffffff");
 
   function setFlipped(value: boolean) {
@@ -31,12 +32,26 @@
   }
 
   function handlePointer(event: PointerEvent) {
-    if (!mobileMode && event.pointerType === "mouse") {
+    if (event.pointerType === "mouse") {
       setFlipped(event.type === "pointerenter");
     }
   }
 
+  function rememberPointer(event: PointerEvent) {
+    // Safari clicks can omit pointerType or label touch as mouse. The pointer
+    // events preceding the click identify the actual input, at every width.
+    activationPointerType = event.pointerType;
+  }
+
+  function cancelPointer() {
+    activationPointerType = undefined;
+  }
+
   function toggleFlipped(event: MouseEvent | KeyboardEvent) {
+    const pointerType =
+      activationPointerType ??
+      ("pointerType" in event ? event.pointerType : undefined);
+    activationPointerType = undefined;
     // Links on the back should navigate without triggering another flip.
     if (
       !flippable ||
@@ -46,12 +61,8 @@
     if (event instanceof KeyboardEvent) {
       if (event.key !== "Enter" && event.key !== " ") return;
       event.preventDefault();
-    } else if (
-      !mobileMode &&
-      event.detail > 0 &&
-      (!("pointerType" in event) || event.pointerType === "mouse")
-    ) {
-      // Desktop mouse input is controlled by hover, not also by clicks.
+    } else if (event.detail > 0 && pointerType === "mouse") {
+      // Mouse input is controlled by hover, not also by its following click.
       return;
     }
     setFlipped(!isFlipped);
@@ -63,6 +74,9 @@
     class="hex-container"
     onpointerenter={handlePointer}
     onpointerleave={handlePointer}
+    onpointerdown={rememberPointer}
+    onpointerup={rememberPointer}
+    onpointercancel={cancelPointer}
     onclick={toggleFlipped}
     onkeydown={toggleFlipped}
     role="button"

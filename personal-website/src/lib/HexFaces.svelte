@@ -46,7 +46,7 @@
     position: relative;
     transform-style: preserve-3d;
     transform: rotateX(0deg);
-    transition: transform 1000ms ease;
+    transition: transform 1000ms ease-in-out;
   }
   .hex-rotor.is-flipped {
     transform: rotateX(180deg);
@@ -54,9 +54,9 @@
   .hex-face {
     position: absolute;
     inset: 0;
-    /* Gecko needs each face transformed to hide its entire backface. */
+    /* Keep each face's descendants together as one backface-cullable surface. */
     transform: rotateX(0deg);
-    transform-style: preserve-3d;
+    transform-style: flat;
     backface-visibility: hidden;
   }
   .hex-face.back {
