@@ -23,6 +23,23 @@ yarn build
 
 Run `yarn format` to apply formatting. The static production output is written to `build/` for Cloudflare Pages.
 
+## Browser regression tests
+
+Install the test browsers, build the site, and run the scenarios:
+
+```sh
+yarn playwright install chromium firefox
+yarn build
+yarn test:e2e
+```
+
+`tests/website.spec.ts` describes the visible behavior; `tests/website.helpers.ts`
+contains browser measurements and shared assertions. Tests cover font loading and
+fallback, desktop interactions, and touch input at phone sizes in Chromium and
+Firefox. Analytics requests are blocked. Set `PLAYWRIGHT_CHANNEL=chrome` to use
+installed Chrome for the Chromium project, or pass `--project=chromium` or
+`--project=firefox` to run one browser.
+
 ## Deployment
 
 The [Deploy website workflow](../.github/workflows/deploy.yml) checks formatting, types, and the build for pull requests targeting `main` and for every push to `main`. The `Build website` check must pass before a pull request can merge. `main` requires linear history and uses squash merging.
@@ -39,6 +56,12 @@ The repository's GitHub Actions settings need:
 When rotating the token, update the repository secret. Keep tokens out of source control.
 
 ## Components
+
+The site self-hosts JetBrains Mono v2.304 in regular (400) and bold (700)
+WOFF2 files from the [official release](https://github.com/JetBrains/JetBrainsMono/tree/v2.304/fonts/webfonts).
+The fonts and their SIL Open Font License are in `static/fonts/`. Both weights
+are preloaded, and fallback text remains visible while they load. The name
+stays on one line with either the supplied font or a system fallback.
 
 - `HexShape.svelte` draws the original hexagon and border ripple.
 - `HexFaces.svelte` keeps both faces mounted and rotates them together, so interrupted flips reverse without content-swap timers.

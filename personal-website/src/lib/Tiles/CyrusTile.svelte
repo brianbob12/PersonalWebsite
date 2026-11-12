@@ -13,7 +13,7 @@
   {#snippet content()}
     <div class="flex flex-col items-center space-y-2 h-full">
       <div class="flex flex-row justify-center pt-40 w-[170%]">
-        <span class="font-bold text-6xl">Cyrus Singer</span>
+        <span class="font-bold text-6xl whitespace-nowrap">Cyrus Singer</span>
       </div>
       <span class="text-2xl">Software Engineer</span>
     </div>
