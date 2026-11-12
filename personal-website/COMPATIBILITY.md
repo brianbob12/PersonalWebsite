@@ -63,9 +63,12 @@ destination state. This also avoids relying on native backface culling in captur
 paths where it is broken. The frame-painting regression runs on Windows too.
 
 Paint comparisons decode PNG pixels rather than comparing compressed file bytes.
-Only two antialiased pixels, each changing by at most 16/255 per channel, are
-allowed to differ; this covers the observed Chromium 120 edge repaint without
-accepting meaningful rear-face content. There are no cross-browser font baselines.
+They use [pixelmatch's antialiasing detection][pixelmatch] with a perceptual color
+threshold of 0.1 (stricter than [Playwright's default 0.2][pw-threshold]) and require
+zero remaining differing pixels. This excludes Chromium 120's text/edge repaint
+noise without accepting meaningful rear-face content. The comparator was also
+checked against captured WebKit rear-face leakage. There are no cross-browser
+font baselines.
 
 The logo SVG has explicit intrinsic dimensions as well as its viewBox, avoiding
 [older Firefox's zero natural-size behavior][svg-size]. The phone stack measures
@@ -160,3 +163,5 @@ this check; it does not certify these combinations.
 [pw-projects]: https://playwright.dev/docs/test-projects
 [pw-screenshot]: https://github.com/microsoft/playwright/issues/21620
 [svg-size]: https://bugzilla.mozilla.org/show_bug.cgi?id=1935269
+[pixelmatch]: https://github.com/mapbox/pixelmatch
+[pw-threshold]: https://playwright.dev/docs/api/class-snapshotassertions#snapshot-assertions-to-match-snapshot-1-option-threshold
