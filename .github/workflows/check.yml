@@ -6,13 +6,19 @@ on:
       - "personal-website/**"
       - ".github/workflows/check.yml"
   workflow_dispatch:
+    inputs:
+      full_compatibility:
+        description: "Run the slow multi-version compatibility matrix (only for relevant changes)"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
 
 jobs:
   check:
-    name: Compatibility quality checks
+    name: Quick website checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -45,7 +51,15 @@ jobs:
           yarn run check:tests
           yarn build
 
+      - name: Install the smoke-test browser
+        run: yarn playwright install --with-deps chromium
+
+      - name: Run only the default Chromium smoke scenarios
+        run: yarn test:e2e
+
   browsers:
+    # Never run the slow matrix for a push, PR, or default manual invocation.
+    if: github.event_name == 'workflow_dispatch' && inputs.full_compatibility
     name: ${{ matrix.browser }} / Playwright ${{ matrix.playwright }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
@@ -99,9 +113,9 @@ jobs:
       - name: Run compatibility and website scenarios
         run: |
           if [ "${{ matrix.browser }}" = "webkit" ]; then
-            yarn test:e2e --project=webkit --project=webkit-iphone --project=webkit-ipad
+            yarn test:compat --project=webkit --project=webkit-iphone --project=webkit-ipad
           else
-            yarn test:e2e --project="${{ matrix.browser }}"
+            yarn test:compat --project="${{ matrix.browser }}"
           fi
 
       - name: Save reports, actual browser versions, and failure evidence

@@ -2,6 +2,9 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
+  // The default command is the fast smoke suite. Extended coverage is opt-in
+  // through playwright.compat.config.ts / yarn test:compat.
+  testMatch: "**/website.spec.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,
@@ -15,42 +18,9 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      testIgnore: "**/touch.compat.spec.ts",
       use: {
         browserName: "chromium",
         channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
-      },
-    },
-    {
-      name: "firefox",
-      testIgnore: "**/touch.compat.spec.ts",
-      use: { browserName: "firefox" },
-    },
-    {
-      name: "webkit",
-      testIgnore: "**/touch.compat.spec.ts",
-      use: { browserName: "webkit" },
-    },
-    {
-      name: "webkit-iphone",
-      testMatch: "**/touch.compat.spec.ts",
-      use: {
-        browserName: "webkit",
-        viewport: { width: 390, height: 844 },
-        isMobile: true,
-        hasTouch: true,
-        deviceScaleFactor: 1,
-      },
-    },
-    {
-      name: "webkit-ipad",
-      testMatch: "**/touch.compat.spec.ts",
-      use: {
-        browserName: "webkit",
-        viewport: { width: 1366, height: 1024 },
-        isMobile: true,
-        hasTouch: true,
-        deviceScaleFactor: 1,
       },
     },
   ],

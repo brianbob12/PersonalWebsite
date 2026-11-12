@@ -29,31 +29,66 @@ See [Browser compatibility](COMPATIBILITY.md) for supported versions, required
 interaction behavior, Safari/iOS constraints, verification limits, and primary
 sources behind the requirements.
 
-Install the test browsers, build the site, and run the scenarios:
+The default is the quick Chromium smoke suite (13 scenarios, typically around
+10–20 seconds after the build):
 
 ```sh
-yarn playwright install chromium firefox webkit
+yarn playwright install chromium
 yarn build
 yarn test:e2e
 ```
 
-`tests/website.spec.ts` describes the visible behavior; `tests/website.helpers.ts`
-contains browser measurements and shared assertions. Tests cover font loading and
-fallback, desktop interactions, and touch input at phone sizes in Chromium and
-Firefox and WebKit. `tests/compatibility.spec.ts` checks animation frames, halfway
-timing, reversals, legacy click events, mouse deduplication, and viewport behavior.
-`tests/touch.compat.spec.ts` runs real touchscreen input in WebKit phone/tablet
-emulation. Analytics requests are blocked. Set `PLAYWRIGHT_CHANNEL=chrome` to use
-installed Chrome for the Chromium project, or pass `--project=chromium` or
-`--project=firefox`, `--project=webkit`, `--project=webkit-iphone`, or
-`--project=webkit-ipad` to run one profile.
+`yarn test:e2e` and bare `yarn playwright test` run only `tests/website.spec.ts`
+in Chromium. They do not run frame-painting regressions, extra browsers, device
+profiles, or historical browser versions. Normal pull requests run this quick
+suite plus formatting, types, and build checks. Analytics requests are blocked.
+Set `PLAYWRIGHT_CHANNEL=chrome` to use an installed Chrome instead.
 
-The Check website workflow runs four exact Playwright releases against their own
-matching Chromium, Firefox, and WebKit binaries on Ubuntu 22.04, plus current
-WebKit on macOS. Reports include the actual browser version and screenshots/traces
-for failures. The app is built from the frozen application lockfile before the
-disposable CI test runner is changed. No application dependency changes from a
-matrix job are committed or deployed.
+### When to run extended compatibility checks
+
+The extended suite is **opt-in**. It takes roughly 1–2 minutes locally; the full
+13-job historical matrix can take 5–15 minutes in CI, including browser downloads
+and runner queues. These are estimates, not timeouts.
+
+| Change                                                                                      | What to run                                                                                      |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Copy, links, documentation, or isolated asset changes                                       | Use the quick checks; leave the extended matrix off.                                             |
+| Tile CSS/3D transforms, flip timing, input/keyboard behavior, mobile sizing, fonts/fallback | Run the relevant extended browser profile while developing, then the full matrix before merging. |
+| Svelte/SvelteKit/Vite upgrades or browser-target changes                                    | Run the full matrix and the real-device release checks in `COMPATIBILITY.md`.                    |
+| A release with no relevant changes since a green matrix run                                 | Reuse that result; do not rerun the matrix just because another commit or PR exists.             |
+
+Do not run the historical matrix on every edit, commit, or ordinary PR. The dev
+server, build, default test command, and automatic PR workflow never invoke it.
+
+For an explicit local run, build first and install the additional browsers once:
+
+```sh
+yarn playwright install chromium firefox webkit
+yarn build
+yarn test:compat --project=webkit
+# Or opt into all five current-engine/device profiles:
+yarn test:compat
+```
+
+`playwright.compat.config.ts` is separate from the smoke configuration. It adds
+animation-frame/halfway/reversal checks, legacy Safari click events, viewport
+checks, Firefox/WebKit, and WebKit phone/wide-iPad touch profiles. Use
+`--project=chromium`, `firefox`, `webkit`, `webkit-iphone`, or `webkit-ipad` to
+select a profile.
+
+For the historical matrix, manually run **Check website**, select the desired
+branch, and explicitly enable **full_compatibility**. The checkbox defaults to
+false; leaving it off runs only quick checks. The command-line equivalent is:
+
+```sh
+gh workflow run check.yml --ref <branch> -f full_compatibility=true
+```
+
+This opt-in matrix runs four exact Playwright releases against their matching
+Chromium, Firefox, and WebKit binaries on Ubuntu 22.04, plus current WebKit on
+macOS. Reports include actual browser versions and failure screenshots/traces.
+The app is built from its frozen lockfile before changing the disposable test
+runner. No matrix dependency changes are committed or deployed.
 
 | Playwright | Chromium      | Firefox | WebKit |
 | ---------- | ------------- | ------- | ------ |
@@ -74,7 +109,8 @@ compatibility document's real-device release checks.
 
 To reproduce an older snapshot locally, use a disposable checkout, build with the
 frozen lockfile, then run `yarn add --dev --exact --ignore-scripts
-@playwright/test@1.48.2`, install its browsers, and run the suite. Do not commit the
+@playwright/test@1.48.2`, install its browsers, and explicitly run `yarn test:compat`.
+Do not commit the
 temporary package/lockfile changes. Windows WebKit skips only the known-broken
 backface screenshot capture assertion; Linux and macOS execute it.
 
