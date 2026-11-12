@@ -135,7 +135,7 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .active div::before {
+    .hexagon.active div::before {
       animation: none;
     }
   }

@@ -113,16 +113,22 @@ for (const origin of ["touch", "pen"] as const) {
   }
 }
 
-test("a mouse click after hover does not flip a second time", async ({
-  page,
-}) => {
-  const tile = detailsTile(page, "Cyrus");
-  await tile.hover();
-  await tile.click({ position: { x: 250, y: 100 } });
-  await expectDetailsVisible(tile);
-  await page.mouse.move(0, 0);
-  await expectFrontFaceVisible(tile);
-});
+for (const width of [390, 1440]) {
+  test(`mouse hover works at ${width}px without a second toggle on click`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    const tile = detailsTile(page, "Cyrus");
+    await tile.hover();
+    const bounds = await tile.boundingBox();
+    await tile.click({
+      position: { x: bounds!.width / 2, y: bounds!.height / 4 },
+    });
+    await expectDetailsVisible(tile);
+    await page.mouse.move(0, 0);
+    await expectFrontFaceVisible(tile);
+  });
+}
 
 test("desktop pattern uses the visible viewport without a nested vertical scroller", async ({
   page,
