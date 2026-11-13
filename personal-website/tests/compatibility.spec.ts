@@ -24,9 +24,9 @@ test.beforeEach(async ({ page }, testInfo) => {
   await recordBrowserVersion(page, testInfo);
   await page.goto("/", { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
-  // Disable only the decorative ripple, never the flip being measured.
+  // Disable only the decorative glow, never the flip being measured.
   await page.addStyleTag({
-    content: ".hexagon div::before { animation: none !important; }",
+    content: ".hex-glow { animation: none !important; }",
   });
   await page.mouse.move(0, 0);
 });

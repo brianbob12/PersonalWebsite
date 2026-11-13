@@ -36,7 +36,7 @@ the attribute only disables interaction and accessibility exposure. See
 - Enter and Space toggle the tile. Back-face links remain keyboard accessible
   when active and activating a link does not flip the tile. The inactive face's
   links cannot receive focus or clicks.
-- `prefers-reduced-motion: reduce` removes flip and ripple animations. This is
+- `prefers-reduced-motion: reduce` removes flip and glow animations. This is
   an intentional immediate change, rather than an animation failure.
 - The phone stack fits without horizontal scrolling. The desktop layout also
   fits the currently visible height on tablets with browser toolbars. Account
@@ -91,6 +91,72 @@ in the forward direction. Half the angle is not half the elapsed time with an
 asymmetric easing curve. Use a symmetric curve such as `ease-in-out` or `linear`
 for the halfway requirement; do not add a separate content-swap timeout. See
 the [CSS easing definitions][easing].
+
+### Pulse / glow (November 12, 2026)
+
+**Documented facts.** [CSS border widths][border-widths] are snapped to device
+pixels by the [CSS Values algorithm][border-snap]. Interpolating a border width
+therefore does not imply continuously moving painted edges. WebKit documents
+[opacity and transform as candidates for accelerated animation][acceleration];
+this is not a guarantee of compositing, frame rate, or battery cost on a given
+device. [Apple's keyframe guide][apple-keyframes] describes repeating CSS
+animations, and [WebKit's motion guidance][reduced-motion] covers both macOS and
+iOS system preferences, including stopping ongoing decorative animation.
+
+**Observed in this checkout.** The old ripple used five independently transformed
+pieces, three one-second keyframe definitions, changing border widths/colors,
+and opacity. Paused timeline inspection on Windows at device scale 1 with
+Chromium 156.0.8078.4 and Playwright WebKit 27.2 returned top-border widths of
+1, 1, 2, 4, 7, 10, 13, 16, 18, and 19 CSS pixels at 100ms intervals from 0–900ms.
+Both returned 1px again at the next iteration. This verifies stepping of the
+computed border width, **not** the user's Safari frame delivery or the cause of
+their reported jitter. The color and opacity also change; the numeric reset alone
+does not prove a visible flash.
+
+**Theoretical contributors.** Border snapping, repainting changing geometry,
+clipping/antialiasing along independently rotated pieces, and the short repeating
+sweep are plausible contributors. No Safari-specific cause has been isolated.
+For example, [WebKit issue 251941][svg-clip-opacity] reports shifting during
+opacity animation with an SVG URL clip-path on macOS Safari Technology Preview
+16.4; its report explicitly excludes basic shapes. It does not establish a bug
+in this site's polygon clip, nor does it establish an iOS defect. Do not add
+blanket GPU hints, prefixes, or workarounds based on that report.
+
+**Design and implementation.** Preserve the black-and-white honeycomb and fixed
+tile borders. Replace the segmented sweep with one inset hexagonal halo: fixed
+translucent SVG strokes on an HTML wrapper, breathing only through CSS opacity
+(0.25 → 0.85 → 0.25 over 3.2 seconds, symmetric ease-in-out). No animated border
+width, stroke width, scale, blur, filter, or clip. The endpoints match and both
+slopes settle at the loop boundary. The center content remains still. The halo
+is decorative, ignores pointer input, and exists only while details are active;
+it never controls flip timing or the matrix-based face visibility fix. Motion
+is enabled only inside `prefers-reduced-motion: no-preference`; otherwise the
+halo is a steady 0.5 opacity and the flip remains immediate.
+
+**Regression evidence and limits.** `pulse.compat.spec.ts` inspects timeline
+advancement, opacity-only keyframes, stable stroke/content bounds, symmetric
+phases, and the iteration seam. It compares painted trough/peak/loop captures,
+checks both tiles with hover or emulated touch, verifies link activation through
+the halo, and changes reduced motion while details are open. Captures and samples
+are attached to the compatibility report. Live preference changes run before
+programmatic timeline inspection, and link activation runs after captures so
+its separate underline transition cannot affect the pulse comparison. These
+checks detect geometry and
+painting regressions; they are not a dropped-frame benchmark or a certification
+of hardware smoothness. The default smoke suite stays at 13 scenarios; slow
+pulse/frame/browser coverage remains opt-in.
+
+Local validation on Windows used the locked Playwright 1.64.0: all 13 default
+Chromium scenarios, all 27 desktop WebKit scenarios (including existing flip
+painting), and all 8 focused pulse scenarios across Chromium, WebKit, emulated
+iPhone, and wide iPad passed. Formatting, application/test type checks, and the
+production build passed. The review PR records the subsequent historical matrix
+result. Actual Safari 16.4/current macOS and iOS hardware was unavailable here;
+frame pacing, Retina antialiasing, and energy/thermal behavior remain unverified.
+Before release, watch several complete pulse cycles and rapid enter/leave/tap
+reversals on that hardware, both with and without Reduce Motion. Keep contact
+links usable throughout; the decorative outline must stay inside the tile and
+never move the text. The existing real-device release checks below still apply.
 
 ### Touch events and hybrid devices
 
@@ -165,3 +231,9 @@ this check; it does not certify these combinations.
 [svg-size]: https://bugzilla.mozilla.org/show_bug.cgi?id=1935269
 [pixelmatch]: https://github.com/mapbox/pixelmatch
 [pw-threshold]: https://playwright.dev/docs/api/class-snapshotassertions#snapshot-assertions-to-match-snapshot-1-option-threshold
+[border-widths]: https://www.w3.org/TR/css-backgrounds-3/#border-width
+[border-snap]: https://www.w3.org/TR/css-values-4/#snap-a-length-as-a-border-width
+[acceleration]: https://bugs.webkit.org/show_bug.cgi?id=179973
+[apple-keyframes]: https://developer.apple.com/library/archive/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/AnimatingWithKeyframes/AnimatingWithKeyframes.html
+[reduced-motion]: https://webkit.org/blog/7551/responsive-design-for-motion/
+[svg-clip-opacity]: https://bugs.webkit.org/show_bug.cgi?id=251941

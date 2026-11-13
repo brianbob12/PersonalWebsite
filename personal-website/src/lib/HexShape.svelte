@@ -1,6 +1,20 @@
 <script lang="ts">
   import { HEX_WIDTH, HEX_HEIGHT } from "./hexGeometry";
 
+  // An inset regular hexagon keeps the halo inside the existing tile border.
+  const inset = 14;
+  const diagonalInset = inset / Math.sqrt(3);
+  const glowPoints = [
+    [HEX_WIDTH / 4 + diagonalInset, inset],
+    [(3 * HEX_WIDTH) / 4 - diagonalInset, inset],
+    [HEX_WIDTH - 2 * diagonalInset, HEX_HEIGHT / 2],
+    [(3 * HEX_WIDTH) / 4 - diagonalInset, HEX_HEIGHT - inset],
+    [HEX_WIDTH / 4 + diagonalInset, HEX_HEIGHT - inset],
+    [2 * diagonalInset, HEX_HEIGHT / 2],
+  ]
+    .map((point) => point.join(","))
+    .join(" ");
+
   interface Props {
     backgroundColor: string;
     borderColor: string;
@@ -30,6 +44,27 @@
     <div class="hexagon-right-top"></div>
     <div class="hexagon-right-bottom"></div>
   </div>
+  {#if active}
+    <!-- Fixed strokes form one continuous halo; only the HTML wrapper fades. -->
+    <div class="hex-glow" aria-hidden="true">
+      <svg
+        viewBox={`0 0 ${HEX_WIDTH} ${HEX_HEIGHT}`}
+        width={HEX_WIDTH}
+        height={HEX_HEIGHT}
+        focusable="false"
+      >
+        <g fill="none" stroke={borderColor} stroke-linejoin="round">
+          {#each [[28, 0.025], [20, 0.04], [12, 0.07], [6, 0.1], [1.5, 0.6]] as [width, opacity]}
+            <polygon
+              points={glowPoints}
+              stroke-width={width}
+              stroke-opacity={opacity}
+            />
+          {/each}
+        </g>
+      </svg>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -82,61 +117,34 @@
     background-color: var(--hex-background);
     border-block: 4px solid var(--hex-border);
   }
-  .active .hexagon-left-top::before,
-  .active .hexagon-left-bottom::before,
-  .active .hexagon-middle::before,
-  .active .hexagon-right-top::before,
-  .active .hexagon-right-bottom::before {
-    content: "";
+  .hexagon.active {
+    position: relative;
+  }
+  .hex-glow {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .hex-glow svg {
+    display: block;
     width: 100%;
     height: 100%;
-    animation: rippleTopBottom 1s ease-in-out infinite;
   }
-  .active .hexagon-left-top::before,
-  .active .hexagon-left-bottom::before {
-    animation-name: rippleLeft;
-  }
-  .active .hexagon-right-top::before,
-  .active .hexagon-right-bottom::before {
-    animation-name: rippleRight;
-  }
-
-  @keyframes rippleTopBottom {
-    from {
-      border-top: 1px solid transparent;
-      border-bottom: 1px solid transparent;
-    }
-    to {
-      border-top: 20px solid #000000;
-      border-bottom: 20px solid #000000;
-      opacity: 0;
+  /* Opt in to motion. Reduced motion keeps the same quiet, static outline. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hex-glow {
+      animation: hex-breathe 3.2s ease-in-out infinite;
     }
   }
-  @keyframes rippleLeft {
-    from {
-      border-left: 1px solid transparent;
+  @keyframes hex-breathe {
+    0%,
+    100% {
+      opacity: 0.25;
     }
-    to {
-      border-left: 10px solid #000000;
-      opacity: 0;
-    }
-  }
-  @keyframes rippleRight {
-    from {
-      border-right: 1px solid transparent;
-    }
-    to {
-      border-right: 10px solid #000000;
-      opacity: 0;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hexagon.active div::before {
-      animation: none;
+    50% {
+      opacity: 0.85;
     }
   }
 </style>

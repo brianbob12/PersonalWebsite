@@ -28,7 +28,7 @@ test("real touchscreen taps toggle both tiles at this device's layout width", as
   }
 });
 
-test("reduced motion removes flip and ripple animation on touch devices", async ({
+test("reduced motion removes flip and glow animation on touch devices", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
