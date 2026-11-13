@@ -117,12 +117,21 @@ for (const name of ["Cyrus", "Ciridae"] as const) {
       });
     }
 
+    // Resume normal playback after deterministic capture. Exercise a real user
+    // preference change, rather than leaving a script-paused test animation.
+    await glow.evaluate(async (element) => {
+      const animation = element.getAnimations()[0];
+      animation.play();
+      await animation.ready;
+    });
     // Changing the system preference while open must cancel the decorative loop.
     await page.emulateMedia({ reducedMotion: "reduce" });
     await expect(glow).toHaveCSS("opacity", "0.5");
-    expect(
-      await glow.evaluate((element) => element.getAnimations().length),
-    ).toBe(0);
+    // Older engines can retire a script-paused CSS animation on the next frame.
+    // The visual preference and the canceled animation must both settle.
+    await expect
+      .poll(() => glow.evaluate((element) => element.getAnimations().length))
+      .toBe(0);
     const link = tile.locator(".back a").first();
     await link.evaluate((element) =>
       element.addEventListener("click", (event) => event.preventDefault()),
