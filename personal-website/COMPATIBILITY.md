@@ -123,8 +123,11 @@ in this site's polygon clip, nor does it establish an iOS defect. Do not add
 blanket GPU hints, prefixes, or workarounds based on that report.
 
 **Design and implementation.** Preserve the black-and-white honeycomb and fixed
-tile borders. Replace the segmented sweep with one inset hexagonal halo: fixed
-translucent SVG strokes on an HTML wrapper, breathing only through CSS opacity
+tile borders. Use one internal glow along the hexagon perimeter, replacing the
+inset ring. Fixed translucent SVG strokes sit on the boundary; a static CSS
+polygon clip on the SVG keeps their outer halves from painting outside the
+face. The shade fades inward from the edge without a detached outline. The HTML
+wrapper breathes only through CSS opacity
 (0.25 → 0.85 → 0.25 over 3.2 seconds, symmetric ease-in-out). No animated border
 width, stroke width, scale, blur, filter, or clip. The endpoints match and both
 slopes settle at the loop boundary. The center content remains still. The halo
@@ -140,18 +143,19 @@ checks both tiles with hover or emulated touch, verifies link activation through
 the halo, and changes reduced motion while details are open. Captures and samples
 are attached to the compatibility report. Live preference changes run before
 programmatic timeline inspection, and link activation runs after captures so
-its separate underline transition cannot affect the pulse comparison. These
-checks detect geometry and
-painting regressions; they are not a dropped-frame benchmark or a certification
+its separate underline transition cannot affect the pulse comparison.
+A white-backed SVG paint probe checks all six sides: shading starts immediately
+inside the boundary, outside pixels remain white, and the center stays clear.
+These checks detect geometry and painting regressions; they are not a
+dropped-frame benchmark or a certification
 of hardware smoothness. The default smoke suite stays at 13 scenarios; slow
 pulse/frame/browser coverage remains opt-in.
 
-Local validation on Windows used the locked Playwright 1.64.0: all 13 default
-Chromium scenarios, all 27 desktop WebKit scenarios (including existing flip
-painting), and all 8 focused pulse scenarios across Chromium, WebKit, emulated
-iPhone, and wide iPad passed. Formatting, application/test type checks, and the
-production build passed. The review PR records the subsequent historical matrix
-result. Actual Safari 16.4/current macOS and iOS hardware was unavailable here;
+The original opacity-only animation passed the full 13-configuration
+[browser/OS matrix](https://github.com/brianbob12/PersonalWebsite/actions/runs/43343305512).
+The edge-only revision adds the paint probe above; its follow-up PR records the
+new validation result. Actual Safari 16.4/current macOS and iOS hardware was
+unavailable here;
 frame pacing, Retina antialiasing, and energy/thermal behavior remain unverified.
 Before release, watch several complete pulse cycles and rapid enter/leave/tap
 reversals on that hardware, both with and without Reduce Motion. Keep contact

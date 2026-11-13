@@ -1,4 +1,10 @@
-import { expect, test } from "@playwright/test";
+import {
+  expect,
+  test,
+  type Locator,
+  type Page,
+  type TestInfo,
+} from "@playwright/test";
 import { PNG } from "pngjs";
 import {
   blockAnalytics,
@@ -20,6 +26,82 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.goto("/", { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
 });
+
+async function expectInternalEdgeGlow(
+  page: Page,
+  glow: Locator,
+  testInfo: TestInfo,
+) {
+  // Copy the real SVG onto white so black outside strokes cannot hide in the
+  // site's black background or be clipped by the stationary pointer wrapper.
+  await glow.evaluate((element) => {
+    const probe = document.createElement("div");
+    probe.id = "pulse-edge-probe";
+    probe.className = element.className;
+    probe.setAttribute("aria-hidden", "true");
+    probe.style.cssText =
+      "position:fixed;inset:auto;left:0;top:0;width:280px;height:248px;padding:20px;background:white;opacity:1;animation:none;z-index:2147483647;pointer-events:none";
+    const svg = element.querySelector("svg")!.cloneNode(true) as SVGSVGElement;
+    svg.style.width = "240px";
+    svg.style.height = `${120 * Math.sqrt(3)}px`;
+    probe.append(svg);
+    document.body.append(probe);
+  });
+  let capture: Buffer;
+  try {
+    capture = await page.screenshot({
+      clip: (await page.locator("#pulse-edge-probe").boundingBox())!,
+    });
+  } finally {
+    await page
+      .locator("#pulse-edge-probe")
+      .evaluate((element) => element.remove());
+  }
+  await testInfo.attach("internal-edge-glow", {
+    body: capture,
+    contentType: "image/png",
+  });
+  const pixels = PNG.sync.read(capture);
+  const shade = (x: number, y: number) => {
+    let total = 0;
+    for (let dy = -1; dy <= 1; dy++)
+      for (let dx = -1; dx <= 1; dx++) {
+        const index =
+          ((Math.round(y) + dy) * pixels.width + Math.round(x) + dx) * 4;
+        total += pixels.data[index];
+      }
+    return total / 9;
+  };
+  const height = 120 * Math.sqrt(3);
+  const vertices = [
+    [60, 0],
+    [180, 0],
+    [240, height / 2],
+    [180, height],
+    [60, height],
+    [0, height / 2],
+  ];
+  for (let i = 0; i < vertices.length; i++) {
+    const next = vertices[(i + 1) % vertices.length];
+    const x = (vertices[i][0] + next[0]) / 2;
+    const y = (vertices[i][1] + next[1]) / 2;
+    const distance = Math.hypot(120 - x, height / 2 - y);
+    const inwardX = (120 - x) / distance;
+    const inwardY = (height / 2 - y) / distance;
+    expect(
+      shade(20 + x + 2 * inwardX, 20 + y + 2 * inwardY),
+      `Side ${i}: shade starts at the inside edge`,
+    ).toBeLessThan(230);
+    expect(
+      shade(20 + x - 3 * inwardX, 20 + y - 3 * inwardY),
+      `Side ${i}: no shade outside the hexagon`,
+    ).toBeGreaterThan(250);
+  }
+  expect(
+    shade(140, 20 + height / 2),
+    "The center remains clear",
+  ).toBeGreaterThan(250);
+}
 
 for (const name of ["Cyrus", "Ciridae"] as const) {
   test(`${name}: glow breathes continuously without moving edges or content`, async ({
@@ -130,6 +212,7 @@ for (const name of ["Cyrus", "Ciridae"] as const) {
       changedPixels,
       "The glow visibly changes, rather than merely declaring an animation",
     ).toBeGreaterThan(100);
+    await expectInternalEdgeGlow(page, glow, testInfo);
     const link = tile.locator(".back a").first();
     await link.evaluate((element) =>
       element.addEventListener("click", (event) => event.preventDefault()),
