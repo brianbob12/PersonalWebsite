@@ -1,16 +1,15 @@
 <script lang="ts">
   import { HEX_WIDTH, HEX_HEIGHT } from "./hexGeometry";
 
-  // An inset regular hexagon keeps the halo inside the existing tile border.
-  const inset = 14;
-  const diagonalInset = inset / Math.sqrt(3);
+  // Center fixed strokes on the perimeter; the glow layer clips away their
+  // outer halves, so the shadow begins at the edge instead of a detached ring.
   const glowPoints = [
-    [HEX_WIDTH / 4 + diagonalInset, inset],
-    [(3 * HEX_WIDTH) / 4 - diagonalInset, inset],
-    [HEX_WIDTH - 2 * diagonalInset, HEX_HEIGHT / 2],
-    [(3 * HEX_WIDTH) / 4 - diagonalInset, HEX_HEIGHT - inset],
-    [HEX_WIDTH / 4 + diagonalInset, HEX_HEIGHT - inset],
-    [2 * diagonalInset, HEX_HEIGHT / 2],
+    [HEX_WIDTH / 4, 0],
+    [(3 * HEX_WIDTH) / 4, 0],
+    [HEX_WIDTH, HEX_HEIGHT / 2],
+    [(3 * HEX_WIDTH) / 4, HEX_HEIGHT],
+    [HEX_WIDTH / 4, HEX_HEIGHT],
+    [0, HEX_HEIGHT / 2],
   ]
     .map((point) => point.join(","))
     .join(" ");
@@ -54,7 +53,7 @@
         focusable="false"
       >
         <g fill="none" stroke={borderColor} stroke-linejoin="round">
-          {#each [[28, 0.025], [20, 0.04], [12, 0.07], [6, 0.1], [1.5, 0.6]] as [width, opacity]}
+          {#each [[48, 0.015], [40, 0.02], [32, 0.025], [26, 0.035], [20, 0.05], [14, 0.075], [10, 0.11], [6, 0.18]] as [width, opacity]}
             <polygon
               points={glowPoints}
               stroke-width={width}
@@ -126,6 +125,8 @@
     z-index: 6;
     pointer-events: none;
     opacity: 0.5;
+    /* Clip the HTML layer: older WebKit can leak strokes from a clipped SVG. */
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
   }
   .hex-glow svg {
     display: block;

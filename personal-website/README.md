@@ -139,7 +139,7 @@ The fonts and their SIL Open Font License are in `static/fonts/`. Both weights
 are preloaded, and fallback text remains visible while they load. The name
 stays on one line with either the supplied font or a system fallback.
 
-- `HexShape.svelte` draws the original hexagon and a continuous, opacity-only inset glow.
+- `HexShape.svelte` draws the original hexagon and a continuous, opacity-only internal glow at the hexagon edge.
 - `HexFaces.svelte` keeps both faces mounted and rotates them together, so interrupted flips reverse without content-swap timers.
 - `HexTile.svelte` handles hover, touch, keyboard input, and front/back content.
 - `hexGeometry.ts` shares the tile dimensions with the mobile layout.
