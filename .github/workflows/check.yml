@@ -2,17 +2,23 @@ name: Check website
 
 on:
   pull_request:
-    branches: [main]
     paths:
       - "personal-website/**"
       - ".github/workflows/check.yml"
+  workflow_dispatch:
+    inputs:
+      full_compatibility:
+        description: "Run the slow multi-version compatibility matrix (only for relevant changes)"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
 
 jobs:
   check:
-    name: Browser regression tests
+    name: Quick website checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -38,11 +44,87 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Build website
-        run: yarn build
+      - name: Check formatting, types, and build
+        run: |
+          yarn format:check
+          yarn run check
+          yarn run check:tests
+          yarn build
 
-      - name: Install Chromium and Firefox
-        run: yarn playwright install --with-deps chromium firefox
+      - name: Install the smoke-test browser
+        run: yarn playwright install --with-deps chromium
 
-      - name: Run browser regression tests
+      - name: Run only the default Chromium smoke scenarios
         run: yarn test:e2e
+
+  browsers:
+    # Never run the slow matrix for a push, PR, or default manual invocation.
+    if: github.event_name == 'workflow_dispatch' && inputs.full_compatibility
+    name: ${{ matrix.browser }} / Playwright ${{ matrix.playwright }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-22.04]
+        playwright: ["1.40.1", "1.48.2", "1.56.1", "1.64.0"]
+        browser: [chromium, firefox, webkit]
+        include:
+          - os: macos-latest
+            playwright: "1.64.0"
+            browser: webkit
+    defaults:
+      run:
+        working-directory: personal-website
+        shell: bash
+    env:
+      COMPAT_PLAYWRIGHT_VERSION: ${{ matrix.playwright }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "22"
+          package-manager-cache: false
+
+      - name: Set up Yarn Classic
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+
+      - name: Install locked application dependencies and build
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+
+      # Build the app from its lockfile first. Only the disposable test runner is
+      # changed afterward; historical runners never build production artifacts.
+      - name: Select the exact Playwright release
+        run: yarn add --dev --exact --ignore-scripts "@playwright/test@${{ matrix.playwright }}"
+
+      - name: Install matching browser binaries
+        run: yarn playwright install --with-deps "${{ matrix.browser }}"
+
+      - name: Run compatibility and website scenarios
+        run: |
+          if [ "${{ matrix.browser }}" = "webkit" ]; then
+            yarn test:compat --project=webkit --project=webkit-iphone --project=webkit-ipad
+          else
+            yarn test:compat --project="${{ matrix.browser }}"
+          fi
+
+      - name: Save reports, actual browser versions, and failure evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: compatibility-${{ matrix.os }}-${{ matrix.playwright }}-${{ matrix.browser }}
+          path: |
+            personal-website/playwright-report
+            personal-website/test-results
+          if-no-files-found: ignore
+          retention-days: 7
