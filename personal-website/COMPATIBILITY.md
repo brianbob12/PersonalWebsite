@@ -138,7 +138,10 @@ advancement, opacity-only keyframes, stable stroke/content bounds, symmetric
 phases, and the iteration seam. It compares painted trough/peak/loop captures,
 checks both tiles with hover or emulated touch, verifies link activation through
 the halo, and changes reduced motion while details are open. Captures and samples
-are attached to the compatibility report. These checks detect geometry and
+are attached to the compatibility report. Live preference changes run before
+programmatic timeline inspection, and link activation runs after captures so
+its separate underline transition cannot affect the pulse comparison. These
+checks detect geometry and
 painting regressions; they are not a dropped-frame benchmark or a certification
 of hardware smoothness. The default smoke suite stays at 13 scenarios; slow
 pulse/frame/browser coverage remains opt-in.

@@ -42,12 +42,6 @@ for (const name of ["Cyrus", "Ciridae"] as const) {
     await expect
       .poll(() => glow.evaluate((element) => element.getAnimations().length))
       .toBe(0);
-    const link = tile.locator(".back a").first();
-    await link.evaluate((element) =>
-      element.addEventListener("click", (event) => event.preventDefault()),
-    );
-    await link.click();
-    await expect(tile).toHaveAttribute("aria-pressed", "true");
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await expect
       .poll(() => glow.evaluate((element) => element.getAnimations().length))
@@ -110,20 +104,6 @@ for (const name of ["Cyrus", "Ciridae"] as const) {
     }
     for (const sample of samples.slice(4))
       expect(sample.opacity).toBeCloseTo(samples[0].opacity, 4);
-    expect(
-      comparePaint(captures[0], captures[2]).matches,
-      "No painted jump at the loop boundary",
-    ).toBe(true);
-    const trough = PNG.sync.read(captures[0]);
-    const peak = PNG.sync.read(captures[1]);
-    let changedPixels = 0;
-    for (let i = 0; i < trough.data.length; i += 4) {
-      if (Math.abs(trough.data[i] - peak.data[i]) > 3) changedPixels++;
-    }
-    expect(
-      changedPixels,
-      "The glow visibly changes, rather than merely declaring an animation",
-    ).toBeGreaterThan(100);
     await testInfo.attach("pulse-samples", {
       body: JSON.stringify(samples, null, 2),
       contentType: "application/json",
@@ -135,6 +115,27 @@ for (const name of ["Cyrus", "Ciridae"] as const) {
       });
     }
 
+    const loopPaint = comparePaint(captures[0], captures[2]);
+    expect(
+      loopPaint.matches,
+      `No painted jump at the loop boundary: ${JSON.stringify(loopPaint)}`,
+    ).toBe(true);
+    const trough = PNG.sync.read(captures[0]);
+    const peak = PNG.sync.read(captures[1]);
+    let changedPixels = 0;
+    for (let i = 0; i < trough.data.length; i += 4) {
+      if (Math.abs(trough.data[i] - peak.data[i]) > 3) changedPixels++;
+    }
+    expect(
+      changedPixels,
+      "The glow visibly changes, rather than merely declaring an animation",
+    ).toBeGreaterThan(100);
+    const link = tile.locator(".back a").first();
+    await link.evaluate((element) =>
+      element.addEventListener("click", (event) => event.preventDefault()),
+    );
+    await link.click();
+    await expect(tile).toHaveAttribute("aria-pressed", "true");
     if (touch) await tapTileAwayFromLinks(tile);
     else await page.mouse.move(0, 0);
     await expectFrontFaceVisible(tile);
