@@ -4,6 +4,10 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  // Keep the support contract stable when Vite updates its default targets.
+  build: {
+    target: ["chrome111", "edge111", "firefox114", "safari16.4"],
+  },
   plugins: [
     sveltekit({
       preprocess: vitePreprocess(),

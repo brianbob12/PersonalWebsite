@@ -110,9 +110,9 @@ compatibility document's real-device release checks.
 To reproduce an older snapshot locally, use a disposable checkout, build with the
 frozen lockfile, then run `yarn add --dev --exact --ignore-scripts
 @playwright/test@1.48.2`, install its browsers, and explicitly run `yarn test:compat`.
-Do not commit the
-temporary package/lockfile changes. Windows WebKit skips only the known-broken
-backface screenshot capture assertion; Linux and macOS execute it.
+Do not commit the temporary package/lockfile changes. Face-painting assertions run on every engine
+and OS, including Windows WebKit; visible faces are selected from the animated
+angle without depending on native backface culling.
 
 ## Deployment
 

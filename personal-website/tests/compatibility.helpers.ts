@@ -4,6 +4,31 @@ import {
   type Page,
   type TestInfo,
 } from "@playwright/test";
+import { PNG } from "pngjs";
+import pixelmatch from "pixelmatch";
+
+export function comparePaint(actualBuffer: Buffer, referenceBuffer: Buffer) {
+  const actual = PNG.sync.read(actualBuffer);
+  const reference = PNG.sync.read(referenceBuffer);
+  if (actual.width !== reference.width || actual.height !== reference.height) {
+    return { matches: false, changedPixels: -1 };
+  }
+  // Repainting a hidden layer changes text/edge antialiasing in Chromium 120.
+  // Use half Playwright's default color threshold, ignore antialiasing only,
+  // and require zero remaining differing pixels. A real rear-face leak fails.
+  const changedPixels = pixelmatch(
+    actual.data,
+    reference.data,
+    undefined,
+    actual.width,
+    actual.height,
+    { threshold: 0.1, includeAA: false },
+  );
+  return {
+    matches: changedPixels === 0,
+    changedPixels,
+  };
+}
 
 export async function recordBrowserVersion(page: Page, testInfo: TestInfo) {
   const browser = page.context().browser()!;
@@ -76,7 +101,8 @@ export async function expectOnlyFacePaints(
       else element.setAttribute("style", previous);
     }, previousStyle);
   }
-  if (!normal.equals(withoutOther)) {
+  const comparison = comparePaint(normal, withoutOther);
+  if (!comparison.matches) {
     await testInfo.attach(`${label}-actual`, {
       body: normal,
       contentType: "image/png",
@@ -87,8 +113,8 @@ export async function expectOnlyFacePaints(
     });
   }
   expect(
-    normal.equals(withoutOther),
-    `${label}: the opposite face must not contribute painted pixels`,
+    comparison.matches,
+    `${label}: opposite face painted pixels (${JSON.stringify(comparison)})`,
   ).toBe(true);
 }
 

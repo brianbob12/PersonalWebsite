@@ -54,6 +54,27 @@ the 3D context into transformed descendants can expose separately rendered
 content. This is a **theoretical explanation** for the reported immediate Safari
 content change, not a confirmed diagnosis of a particular Safari release.
 
+The regression matrix subsequently showed rear-face painting in WebKit despite
+flattening each face. The implementation therefore samples the rotor's actual
+animated transformation matrix each animation frame and selects the facing
+surface with opacity and pointer-event gating. Both surfaces stay mounted; the
+choice follows the current angle during reversals, rather than a timeout or the
+destination state. This also avoids relying on native backface culling in capture
+paths where it is broken. The frame-painting regression runs on Windows too.
+
+Paint comparisons decode PNG pixels rather than comparing compressed file bytes.
+They use [pixelmatch's antialiasing detection][pixelmatch] with a perceptual color
+threshold of 0.1 (stricter than [Playwright's default 0.2][pw-threshold]) and require
+zero remaining differing pixels. This excludes Chromium 120's text/edge repaint
+noise without accepting meaningful rear-face content. The comparator was also
+checked against captured WebKit rear-face leakage. There are no cross-browser
+font baselines.
+
+The logo SVG has explicit intrinsic dimensions as well as its viewBox, avoiding
+[older Firefox's zero natural-size behavior][svg-size]. The phone stack measures
+its own container and clips the unscaled bounds before they can widen an iOS
+layout viewport and change its auto-zoom/hit-testing coordinates.
+
 Use the [CSS Transforms flip-card model][transforms] as the reference. Its
 rotor preserves 3D while faces flatten their content. The [W3C discussion of
 descendant backface visibility][backface-discussion] explains the interoperability
@@ -141,3 +162,6 @@ this check; it does not certify these combinations.
 [pw-releases]: https://playwright.dev/docs/release-notes
 [pw-projects]: https://playwright.dev/docs/test-projects
 [pw-screenshot]: https://github.com/microsoft/playwright/issues/21620
+[svg-size]: https://bugzilla.mozilla.org/show_bug.cgi?id=1935269
+[pixelmatch]: https://github.com/mapbox/pixelmatch
+[pw-threshold]: https://playwright.dev/docs/api/class-snapshotassertions#snapshot-assertions-to-match-snapshot-1-option-threshold

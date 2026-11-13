@@ -6,14 +6,15 @@
 
   const blankHexes = Array.from({ length: 5 });
   const tileCount = 2 + blankHexes.length;
-  let innerWidth = $state(HEX_WIDTH);
-  let scale = $derived(Math.min(1, Math.max(0, (innerWidth - 32) / HEX_WIDTH)));
+  let containerWidth = $state(0);
+  let scale = $derived(
+    Math.min(1, Math.max(0, (containerWidth - 32) / HEX_WIDTH)),
+  );
 </script>
 
-<svelte:window bind:innerWidth />
-
-<div class="mobile-hexes">
+<div class="mobile-hexes" bind:clientWidth={containerWidth}>
   <div
+    class="hex-viewport"
     style="width: {HEX_WIDTH * scale}px; height: {tileCount *
       HEX_HEIGHT *
       scale}px"
@@ -32,7 +33,14 @@
   .mobile-hexes {
     display: flex;
     justify-content: center;
+    width: 100%;
     padding: 16px;
+    overflow: clip;
+  }
+  .hex-viewport {
+    /* Clip the unscaled layout bounds before they can widen a mobile viewport. */
+    min-width: 0;
+    overflow: clip;
   }
   .hexes {
     transform-origin: top left;

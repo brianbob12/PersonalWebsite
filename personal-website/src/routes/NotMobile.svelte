@@ -42,9 +42,11 @@
   .all-hexes-container {
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    /* Trim the decorative pattern without creating an inner scroll container. */
+    overflow: clip;
     align-items: center;
     height: 100vh;
+    height: 100dvh;
   }
   .first-row {
     margin-top: -220px;

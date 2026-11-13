@@ -46,13 +46,21 @@ for (const width of [320, 390, 1440]) {
     test("the name still fits on one centered line when both font downloads fail", async ({
       page,
     }) => {
-      await page.route("**/fonts/*.woff2", (route) => route.abort());
+      const blockedFonts = new Set<string>();
+      await page.route("**/fonts/*.woff2", (route) => {
+        blockedFonts.add(route.request().url());
+        return route.abort();
+      });
       await page.goto("/", { waitUntil: "networkidle" });
 
-      expect(await readFontFaces(page)).toEqual([
-        { weight: "400", status: "error" },
-        { weight: "700", status: "error" },
-      ]);
+      const faces = await readFontFaces(page);
+      expect(blockedFonts.size, "Both actual font requests were aborted").toBe(
+        2,
+      );
+      expect(faces.map((face) => face.weight)).toEqual(["400", "700"]);
+      // WebKit may reset an aborted face to "unloaded"; the requirement is
+      // unavailable custom fonts with usable fallback text, not a status label.
+      expect(faces.every((face) => face.status !== "loaded")).toBe(true);
       const name = await readNameLayout(page);
       expect(name.lineCount).toBe(1);
       expect(name.centerOffsetPx).toBeLessThan(1);
@@ -157,7 +165,9 @@ test.describe("desktop", () => {
     await expect(page.locator(".mobile-hexes")).toHaveCount(0);
   });
 
-  test("reduced motion removes the flip animation", async ({ page }) => {
+  test("reduced motion removes flip and decorative ripple animations", async ({
+    page,
+  }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     const tile = detailsTile(page, "Cyrus");
     await tile.focus();
@@ -168,6 +178,13 @@ test.describe("desktop", () => {
       "transition-duration",
       "0s",
     );
+    await expect
+      .poll(() =>
+        tile.evaluate(
+          (element) => element.getAnimations({ subtree: true }).length,
+        ),
+      )
+      .toBe(0);
   });
 });
 
