@@ -35,6 +35,24 @@ for (const name of ["Cyrus", "Ciridae"] as const) {
     await expect(glow).toHaveAttribute("aria-hidden", "true");
     await expect(glow).toHaveCSS("pointer-events", "none");
 
+    // Test a live preference change before touching the animation timeline.
+    // Keep live-input checks independent of deterministic timeline seeking.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect(glow).toHaveCSS("opacity", "0.5");
+    await expect
+      .poll(() => glow.evaluate((element) => element.getAnimations().length))
+      .toBe(0);
+    const link = tile.locator(".back a").first();
+    await link.evaluate((element) =>
+      element.addEventListener("click", (event) => event.preventDefault()),
+    );
+    await link.click();
+    await expect(tile).toHaveAttribute("aria-pressed", "true");
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await expect
+      .poll(() => glow.evaluate((element) => element.getAnimations().length))
+      .toBe(1);
+
     // Check the real CSS timeline advances before pausing for deterministic paint.
     const advancing = await glow.evaluate(async (element) => {
       const animation = element.getAnimations()[0];
@@ -117,31 +135,6 @@ for (const name of ["Cyrus", "Ciridae"] as const) {
       });
     }
 
-    // Resume normal playback after deterministic capture. Exercise a real user
-    // preference change, rather than leaving a script-paused test animation.
-    await glow.evaluate(async (element) => {
-      const animation = element.getAnimations()[0];
-      animation.play();
-      await animation.ready;
-    });
-    // Changing the system preference while open must cancel the decorative loop.
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await expect(glow).toHaveCSS("opacity", "0.5");
-    // Older engines can retire a script-paused CSS animation on the next frame.
-    // The visual preference and the canceled animation must both settle.
-    await expect
-      .poll(() => glow.evaluate((element) => element.getAnimations().length))
-      .toBe(0);
-    const link = tile.locator(".back a").first();
-    await link.evaluate((element) =>
-      element.addEventListener("click", (event) => event.preventDefault()),
-    );
-    await link.click();
-    await expect(tile).toHaveAttribute("aria-pressed", "true");
-    await page.emulateMedia({ reducedMotion: "no-preference" });
-    await expect
-      .poll(() => glow.evaluate((element) => element.getAnimations().length))
-      .toBe(1);
     if (touch) await tapTileAwayFromLinks(tile);
     else await page.mouse.move(0, 0);
     await expectFrontFaceVisible(tile);
