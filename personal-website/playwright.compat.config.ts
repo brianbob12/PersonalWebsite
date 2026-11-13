@@ -26,7 +26,7 @@ export default defineConfig({
     },
     {
       name: "webkit-iphone",
-      testMatch: "**/touch.compat.spec.ts",
+      testMatch: ["**/touch.compat.spec.ts", "**/pulse.compat.spec.ts"],
       use: {
         browserName: "webkit",
         viewport: { width: 390, height: 844 },
@@ -37,7 +37,7 @@ export default defineConfig({
     },
     {
       name: "webkit-ipad",
-      testMatch: "**/touch.compat.spec.ts",
+      testMatch: ["**/touch.compat.spec.ts", "**/pulse.compat.spec.ts"],
       use: {
         browserName: "webkit",
         viewport: { width: 1366, height: 1024 },

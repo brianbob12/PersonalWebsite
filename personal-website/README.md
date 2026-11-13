@@ -50,12 +50,12 @@ The extended suite is **opt-in**. It takes roughly 1–2 minutes locally; the fu
 13-job historical matrix can take 5–15 minutes in CI, including browser downloads
 and runner queues. These are estimates, not timeouts.
 
-| Change                                                                                      | What to run                                                                                      |
-| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Copy, links, documentation, or isolated asset changes                                       | Use the quick checks; leave the extended matrix off.                                             |
-| Tile CSS/3D transforms, flip timing, input/keyboard behavior, mobile sizing, fonts/fallback | Run the relevant extended browser profile while developing, then the full matrix before merging. |
-| Svelte/SvelteKit/Vite upgrades or browser-target changes                                    | Run the full matrix and the real-device release checks in `COMPATIBILITY.md`.                    |
-| A release with no relevant changes since a green matrix run                                 | Reuse that result; do not rerun the matrix just because another commit or PR exists.             |
+| Change                                                                                           | What to run                                                                                      |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Copy, links, documentation, or isolated asset changes                                            | Use the quick checks; leave the extended matrix off.                                             |
+| Tile CSS/glow/3D transforms, flip timing, input/keyboard behavior, mobile sizing, fonts/fallback | Run the relevant extended browser profile while developing, then the full matrix before merging. |
+| Svelte/SvelteKit/Vite upgrades or browser-target changes                                         | Run the full matrix and the real-device release checks in `COMPATIBILITY.md`.                    |
+| A release with no relevant changes since a green matrix run                                      | Reuse that result; do not rerun the matrix just because another commit or PR exists.             |
 
 Do not run the historical matrix on every edit, commit, or ordinary PR. The dev
 server, build, default test command, and automatic PR workflow never invoke it.
@@ -71,10 +71,12 @@ yarn test:compat
 ```
 
 `playwright.compat.config.ts` is separate from the smoke configuration. It adds
-animation-frame/halfway/reversal checks, legacy Safari click events, viewport
+animation-frame/halfway/reversal and pulse painting checks, legacy Safari click events, viewport
 checks, Firefox/WebKit, and WebKit phone/wide-iPad touch profiles. Use
 `--project=chromium`, `firefox`, `webkit`, `webkit-iphone`, or `webkit-ipad` to
-select a profile.
+select a profile. The pulse scenarios also run on the two touch profiles, and
+attach trough/peak/loop captures plus animation samples. To run only those
+scenarios, use `yarn test:compat pulse.compat --project=webkit`.
 
 For the historical matrix, manually run **Check website**, select the desired
 branch, and explicitly enable **full_compatibility**. The checkbox defaults to
@@ -137,7 +139,7 @@ The fonts and their SIL Open Font License are in `static/fonts/`. Both weights
 are preloaded, and fallback text remains visible while they load. The name
 stays on one line with either the supplied font or a system fallback.
 
-- `HexShape.svelte` draws the original hexagon and border ripple.
+- `HexShape.svelte` draws the original hexagon and a continuous, opacity-only inset glow.
 - `HexFaces.svelte` keeps both faces mounted and rotates them together, so interrupted flips reverse without content-swap timers.
 - `HexTile.svelte` handles hover, touch, keyboard input, and front/back content.
 - `hexGeometry.ts` shares the tile dimensions with the mobile layout.

@@ -165,7 +165,7 @@ test.describe("desktop", () => {
     await expect(page.locator(".mobile-hexes")).toHaveCount(0);
   });
 
-  test("reduced motion removes flip and decorative ripple animations", async ({
+  test("reduced motion removes flip and decorative glow animations", async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -174,6 +174,8 @@ test.describe("desktop", () => {
     await page.keyboard.press("Enter");
 
     await expectDetailsVisible(tile);
+    await expect(tile.locator(".hex-glow")).toHaveCSS("opacity", "0.5");
+    await expect(tile.locator(".hex-glow")).toHaveCSS("pointer-events", "none");
     await expect(tile.locator(".hex-rotor")).toHaveCSS(
       "transition-duration",
       "0s",
