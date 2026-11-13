@@ -1,8 +1,8 @@
 <script lang="ts">
   import { HEX_WIDTH, HEX_HEIGHT } from "./hexGeometry";
 
-  // Center fixed strokes on the perimeter; the SVG clip keeps only their
-  // inner halves, so the shadow begins at the edge instead of a detached ring.
+  // Center fixed strokes on the perimeter; the glow layer clips away their
+  // outer halves, so the shadow begins at the edge instead of a detached ring.
   const glowPoints = [
     [HEX_WIDTH / 4, 0],
     [(3 * HEX_WIDTH) / 4, 0],
@@ -125,10 +125,10 @@
     z-index: 6;
     pointer-events: none;
     opacity: 0.5;
+    /* Clip the HTML layer: older WebKit can leak strokes from a clipped SVG. */
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
   }
   .hex-glow svg {
-    /* A static basic-shape clip follows the face throughout the flip. */
-    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
     display: block;
     width: 100%;
     height: 100%;

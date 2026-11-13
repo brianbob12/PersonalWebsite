@@ -124,8 +124,8 @@ blanket GPU hints, prefixes, or workarounds based on that report.
 
 **Design and implementation.** Preserve the black-and-white honeycomb and fixed
 tile borders. Use one internal glow along the hexagon perimeter, replacing the
-inset ring. Fixed translucent SVG strokes sit on the boundary; a static CSS
-polygon clip on the SVG keeps their outer halves from painting outside the
+inset ring. Fixed translucent SVG strokes sit on the boundary; a static [CSS
+polygon clip][clipping] on the HTML glow wrapper keeps their outer halves from painting outside the
 face. The shade fades inward from the edge without a detached outline. The HTML
 wrapper breathes only through CSS opacity
 (0.25 → 0.85 → 0.25 over 3.2 seconds, symmetric ease-in-out). No animated border
@@ -144,7 +144,7 @@ the halo, and changes reduced motion while details are open. Captures and sample
 are attached to the compatibility report. Live preference changes run before
 programmatic timeline inspection, and link activation runs after captures so
 its separate underline transition cannot affect the pulse comparison.
-A white-backed SVG paint probe checks all six sides: shading starts immediately
+A white-backed glow paint probe checks all six sides: shading starts immediately
 inside the boundary, outside pixels remain white, and the center stays clear.
 These checks detect geometry and painting regressions; they are not a
 dropped-frame benchmark or a certification
@@ -153,8 +153,12 @@ pulse/frame/browser coverage remains opt-in.
 
 The original opacity-only animation passed the full 13-configuration
 [browser/OS matrix](https://github.com/brianbob12/PersonalWebsite/actions/runs/43343305512).
-The edge-only revision adds the paint probe above; its follow-up PR records the
-new validation result. Actual Safari 16.4/current macOS and iOS hardware was
+The edge-only revision adds the paint probe above. It detected outward shading
+with a clip on the root SVG in Playwright 1.40.1 WebKit 17.4 on Linux (outside
+samples averaged 214/255 rather than white). The clip therefore belongs on the
+HTML glow wrapper, leaving the SVG itself unclipped. This is an automated engine
+observation, not a diagnosis of branded Safari. The follow-up PR records final
+validation. Actual Safari 16.4/current macOS and iOS hardware was
 unavailable here;
 frame pacing, Retina antialiasing, and energy/thermal behavior remain unverified.
 Before release, watch several complete pulse cycles and rapid enter/leave/tap
@@ -241,3 +245,4 @@ this check; it does not certify these combinations.
 [apple-keyframes]: https://developer.apple.com/library/archive/documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/AnimatingWithKeyframes/AnimatingWithKeyframes.html
 [reduced-motion]: https://webkit.org/blog/7551/responsive-design-for-motion/
 [svg-clip-opacity]: https://bugs.webkit.org/show_bug.cgi?id=251941
+[clipping]: https://www.w3.org/TR/css-masking-1/#the-clip-path

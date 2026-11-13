@@ -32,19 +32,21 @@ async function expectInternalEdgeGlow(
   glow: Locator,
   testInfo: TestInfo,
 ) {
-  // Copy the real SVG onto white so black outside strokes cannot hide in the
+  // Copy the real glow onto white so black outside strokes cannot hide in the
   // site's black background or be clipped by the stationary pointer wrapper.
   await glow.evaluate((element) => {
     const probe = document.createElement("div");
     probe.id = "pulse-edge-probe";
-    probe.className = element.className;
     probe.setAttribute("aria-hidden", "true");
     probe.style.cssText =
       "position:fixed;inset:auto;left:0;top:0;width:280px;height:248px;padding:20px;background:white;opacity:1;animation:none;z-index:2147483647;pointer-events:none";
+    const wrapper = element.cloneNode(false) as HTMLDivElement;
+    wrapper.style.cssText = `position:relative;inset:auto;width:240px;height:${120 * Math.sqrt(3)}px;opacity:1;animation:none`;
     const svg = element.querySelector("svg")!.cloneNode(true) as SVGSVGElement;
     svg.style.width = "240px";
     svg.style.height = `${120 * Math.sqrt(3)}px`;
-    probe.append(svg);
+    wrapper.append(svg);
+    probe.append(wrapper);
     document.body.append(probe);
   });
   let capture: Buffer;
